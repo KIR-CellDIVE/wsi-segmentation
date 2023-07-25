@@ -1,0 +1,10 @@
+alpineer==0.1.9
+ark==7.1.0
+deepcell==0.12.6
+matplotlib==3.7.2
+numpy==1.25.1
+pandas==2.0.3
+skimage==0.0
+tensorflow==2.13.0
+tqdm==4.65.0
+xarray==2023.7.0

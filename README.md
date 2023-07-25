@@ -1,1 +1,1 @@
-# wsi-segmentation
+# wsi_segmentation
