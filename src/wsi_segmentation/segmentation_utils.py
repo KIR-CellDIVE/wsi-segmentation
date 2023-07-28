@@ -17,7 +17,7 @@ def tile_sizer(img_col_dim, img_row_dim, min_col_tile_size, min_row_tile_size, o
     def _max_tile_size(col_dim, row_dim, ref=max_tile_area):
         return col_dim*row_dim < ref
     
-    def test_cond(img_col_dim, img_row_dim, col_tile_size,row_tile_size, n, overlap):
+    def _test_cond(img_col_dim, img_row_dim, col_tile_size,row_tile_size, n, overlap):
         col_tile_size_final = np.minimum(np.maximum(range(0, x+overlap, col_tile_size)[-1] - overlap, 0) + col_tile_size, x) - np.maximum(range(0, x+overlap, col_tile_size)[-1] - overlap, 0)
         row_tile_size_final = np.minimum(np.maximum(range(0, y+overlap, row_tile_size)[-1] - overlap, 0) + row_tile_size, y) - np.maximum(range(0, y+overlap, row_tile_size)[-1] - overlap, 0)
         return(_f_xy(img_row_dim, n, row_tile_size, overlap) and _f_xy(img_col_dim, n, col_tile_size, overlap) and _max_tile_size(col_tile_size, row_tile_size) and _min_tile_size(col_tile_size_final, row_tile_size_final) and _xy_ratio(col_tile_size, row_tile_size) and _xy_ratio(col_tile_size_final, row_tile_size) and _xy_ratio(col_tile_size, row_tile_size_final) and _xy_ratio(col_tile_size_final, row_tile_size_final))
@@ -34,7 +34,7 @@ def tile_sizer(img_col_dim, img_row_dim, min_col_tile_size, min_row_tile_size, o
         for n in n_tiles:
             for col_tile_size in reversed(np.maximum(range(round(img_col_dim/n), min_col_tile_size), np.minimum((img_row_dim*2)+1, img_col_dim+1))):
                 for row_tile_size in reversed(np.maximum(range(round(col_tile_size/2), min_row_tile_size), np.minimum(round(col_tile_size*2), img_row_dim+1))):
-                    if test_cond(img_col_dim,img_row_dim,col_tile_size,row_tile_size, n, overlap):
+                    if _test_cond(img_col_dim,img_row_dim,col_tile_size,row_tile_size, n, overlap):
                         res = {'col_tile_size' : col_tile_size, 'row_tile_size' : row_tile_size, 'n_tiles' : n, 'overlap' : overlap}
 
     if res == None:
@@ -158,7 +158,7 @@ def _combine_overlapping_masks(mask_x, mask_y, dummy_var):
     gc.collect()
     return(mask_x)
 
-def predict_tiled(img, min_tile_size_col, min_tile_size_row, dummy_var, overlap=0, cutoff=2, background_threshold= 0.1, infer_gaps = True, compartment='whole-cell', postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
+def predict_tiled(img, min_tile_size_col, min_tile_size_row, dummy_var=-99, overlap=0, cutoff=2, background_threshold= 0.1, infer_gaps = True, compartment='whole-cell', postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
     #   ensure the image has 4 dimensions to start with and that the last one is 2 dims
     if len(img.shape) != 4:
         raise ValueError(f"Image data must be 4D, got image of shape {img.shape}")
