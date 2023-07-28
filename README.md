@@ -42,9 +42,9 @@ Next, we install the `libnvidia-container-tools`. As part of this, we have to ad
 ## Fetch and add the signing key
 curl -s -L https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/libnvidia-container.gpg
 ## Fetch the repository file
-curl -s -L https://nvidia.github.io/libnvidia-container/ubuntu${UBUNTU_VERSION}/libnvidia-container.list | sudo tee /etc/apt/sources.list.d/sources.list.d/libnvidia-container.list
+curl -s -L https://nvidia.github.io/libnvidia-container/ubuntu${UBUNTU_VERSION}/libnvidia-container.list | sudo tee /etc/apt/sources.list.d/libnvidia-container.list
 ## Assign new signing key to repository
-sed -i 's#deb http#deb [signed\-by=/etc/apt/trusted\.gpg\.d/libnvidia-container\.gpg] http#' /etc/apt/sources.list.d/sources.list.d/libnvidia-container.list
+sed -i 's#deb http#deb [signed\-by=/etc/apt/trusted\.gpg\.d/libnvidia-container\.gpg] http#' /etc/apt/sources.list.d/libnvidia-container.list
 ## Get the metadata from the new repositories
 sudo apt update
 ## Install the package we need
