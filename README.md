@@ -95,11 +95,11 @@ mkdir ~/.local/bin
 ### create bash scripts in ~/.local/bin ###
 echo "#! /bin/bash
 ## run wsi-segmentation with GPU acceleration
-singularity run \"\$@\" --nv --nvccli $HOME/buils/wsi-segmentation/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-gpu
+singularity run \"\$@\" --nv --nvccli $HOME/builds/wsi-segmentation/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-gpu
 
 echo "#! /bin/bash
 ## run wsi-segmentation without GPU acceleration
-singularity run \"\$@\" $HOME/buils/wsi-segmentation/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-cpu
+singularity run \"\$@\" $HOME/builds/wsi-segmentation/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-cpu
 
 ### make bash scripts executable ###
 chmod +X ~/.local/bin/wsi-segmentation-gpu
