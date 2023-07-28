@@ -90,7 +90,7 @@ In order to make it easier to run the container in the future we create to bash 
 
 ```bash
 ### make sure ~/.local/bin directory exists ###
-mkdir ~/.local/bin
+mkdir -p ~/.local/bin
 
 ### create bash scripts in ~/.local/bin ###
 echo "#! /bin/bash
@@ -102,8 +102,8 @@ echo "#! /bin/bash
 singularity run \"\$@\" $HOME/builds/wsi-segmentation/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-cpu
 
 ### make bash scripts executable ###
-chmod +X ~/.local/bin/wsi-segmentation-gpu
-chmod +X ~/.local/bin/wsi-segmentation-cpu
+chmod +x ~/.local/bin/wsi-segmentation-gpu
+chmod +x ~/.local/bin/wsi-segmentation-cpu
 ###############################################
 ```
 
