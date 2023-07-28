@@ -121,7 +121,7 @@ wsi-segmentation-cpu ## for cpu accelerated segmentation
 
 > **NOTE:** You can pass additional singularity arguments if you want. For example to bind a results folder to a directoty `/data` to make it more easily accessible inside the notebook you can start the notebooks as follows:
 >```bash 
-> wsi-segmentation-gpu --bind /path/to/resulst:/data
+> wsi-segmentation-gpu --bind /path/to/result:/data
 >```
 > #
 

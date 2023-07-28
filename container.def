@@ -53,8 +53,7 @@ From: tensorflow/tensorflow:2.8.0-gpu
     && rm bftools.zip
 
 %runscript
-    # . /opt/.envs/wsi-env/bin/activate
-    jupyter lab --ip=0.0.0.0 --no-browser --port=$LISTEN_PORT --notebook-dir=notebooks
+    jupyter lab --ip=0.0.0.0 --no-browser --port=$LISTEN_PORT
 
 %labels
     Author jonas.mackerodt@kennedy.ox.ac.uk
