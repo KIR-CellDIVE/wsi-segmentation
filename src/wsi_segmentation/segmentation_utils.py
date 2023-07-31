@@ -4,6 +4,7 @@ import numpy as np
 from deepcell.applications import Mesmer
 from pathlib import Path
 import gc
+from math import ceil
 
 def _xy_ratio(col_tile_size, row_tile_size):
         if 0 in [col_tile_size, row_tile_size]:
@@ -19,10 +20,10 @@ def _max_tile_size(col_dim, row_dim, ref=5000*5000):
     return(col_dim*row_dim < ref)
 
 def _smallest_tile_dim(dim_size,n,overlap):
-    return(dim_size/n + overlap - overlap/n)
+    return(ceil(dim_size/n + overlap - overlap/n))
 
 def _smallest_tile_dim_const(smallest_tile_dim, factor=0.5):
-    return(factor*smallest_tile_dim)
+    return(ceil(factor*smallest_tile_dim))
 
 def _smallest_tile_dim_comb(dim_size,n,overlap,factor=0.5):
     smallest_tile_dim = _smallest_tile_dim(dim_size,n,overlap)
