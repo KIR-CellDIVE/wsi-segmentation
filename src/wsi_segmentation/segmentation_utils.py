@@ -201,7 +201,7 @@ def _combine_overlapping_masks(mask_x, mask_y, dummy_var):
     gc.collect()
     return(mask_x)
 
-def predict_tiled(img, min_tile_size_col, min_tile_size_row, dummy_var=-99, overlap=0, cutoff=2, background_threshold= 0.1, infer_gaps = True, compartment='whole-cell', postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
+def predict_tiled(img, dummy_var=-99, overlap=0, cutoff=2, background_threshold= 0.1, infer_gaps = False, compartment='whole-cell', postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
     #   ensure the image has 4 dimensions to start with and that the last one is 2 dims
     if len(img.shape) != 4:
         raise ValueError(f"Image data must be 4D, got image of shape {img.shape}")
@@ -212,7 +212,7 @@ def predict_tiled(img, min_tile_size_col, min_tile_size_row, dummy_var=-99, over
     #   iterate over the first dimension
     for fov_idx in range(img.shape[0]):
         fov = img[[fov_idx], ...]
-        tile = tile_sizer(fov.shape[2], fov.shape[1], min_tile_size_col, min_tile_size_row, overlap=overlap)
+        tile = tile_sizer(fov.shape[2], fov.shape[1], overlap)
         
         step_size_row = tile["row_tile_size"]
         step_size_col = tile["col_tile_size"]
