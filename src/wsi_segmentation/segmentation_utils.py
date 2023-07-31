@@ -5,40 +5,83 @@ from deepcell.applications import Mesmer
 from pathlib import Path
 import gc
 
-def tile_sizer(img_col_dim, img_row_dim, min_col_tile_size, min_row_tile_size, overlap, max_tile_area = 5000^2, min_tile_area = 500^2, n_tiles = range(2,10)):
-    def _f_xy(dim_size, n, tile_size, ov):
-        return dim_size <= ov + n * (tile_size - ov)
-    
-    def _xy_ratio(col_tile_size, row_tile_size):
+def _xy_ratio(col_tile_size, row_tile_size):
         if 0 in [col_tile_size, row_tile_size]:
             return True
-        return 2.0 >= col_tile_size/row_tile_size >= 0.5
-   
-    def _max_tile_size(col_dim, row_dim, ref=max_tile_area):
-        return col_dim*row_dim < ref
-    
-    def _test_cond(img_col_dim, img_row_dim, col_tile_size,row_tile_size, n, overlap):
-        col_tile_size_final = np.minimum(np.maximum(range(0, x+overlap, col_tile_size)[-1] - overlap, 0) + col_tile_size, x) - np.maximum(range(0, x+overlap, col_tile_size)[-1] - overlap, 0)
-        row_tile_size_final = np.minimum(np.maximum(range(0, y+overlap, row_tile_size)[-1] - overlap, 0) + row_tile_size, y) - np.maximum(range(0, y+overlap, row_tile_size)[-1] - overlap, 0)
-        return(_f_xy(img_row_dim, n, row_tile_size, overlap) and _f_xy(img_col_dim, n, col_tile_size, overlap) and _max_tile_size(col_tile_size, row_tile_size) and _min_tile_size(col_tile_size_final, row_tile_size_final) and _xy_ratio(col_tile_size, row_tile_size) and _xy_ratio(col_tile_size_final, row_tile_size) and _xy_ratio(col_tile_size, row_tile_size_final) and _xy_ratio(col_tile_size_final, row_tile_size_final))
-    
-    def _min_tile_size(col_dim, row_dim, ref=min_tile_area):
-        return col_dim*row_dim >= ref
-    
-    res = None
+        return(2.0 >= col_tile_size/row_tile_size >= 0.5)
 
+def _xy_ratios(img_col_dim, img_row_dim, col_tile_size, row_tile_size, n, overlap):
+    last_col_tile = _last_tile_dim(img_col_dim, col_tile_size, n, overlap)
+    last_row_tile = _last_tile_dim(img_row_dim, row_tile_size, n, overlap)
+    return(_xy_ratio(col_tile_size, row_tile_size) and _xy_ratio(last_col_tile, row_tile_size) and _xy_ratio(col_tile_size, last_row_tile) and _xy_ratio(last_col_tile, last_row_tile))
+
+def _max_tile_size(col_dim, row_dim, ref=5000*5000):
+    return(col_dim*row_dim < ref)
+
+def _smallest_tile_dim(dim_size,n,overlap):
+    return(dim_size/n + overlap - overlap/n)
+
+def _smallest_tile_dim_const(smallest_tile_dim, factor=0.5):
+    return(factor*smallest_tile_dim)
+
+def _smallest_tile_dim_comb(dim_size,n,overlap,factor=0.5):
+    smallest_tile_dim = _smallest_tile_dim(dim_size,n,overlap)
+    smallest_tile_oppdim = _smallest_tile_dim_const(smallest_tile_dim, factor=factor)
+    return(smallest_tile_dim,smallest_tile_oppdim)
+
+def _largest_tile_tile_dim(side,n, overlap):
+    return(((3-n) * overlap - side)/(1-n))
+
+def _largest_tile_dim_const(largest_tile_dim, factor=2):
+    return(factor*largest_tile_dim)
+
+def _sum_tiles(tile_dim_size, n, overlap):
+    return(n*(tile_dim_size-overlap)+overlap)
+
+def _overhang(dim_size, tile_dim_size, n, overlap):
+    return(_sum_tiles(tile_dim_size, n, overlap) - dim_size)
+
+def _last_tile_dim(dim_size, tile_dim_size, n, overlap):
+    return(tile_dim_size - _overhang(dim_size, tile_dim_size, n, overlap))
+
+def combined_constraints(img_col_dim, img_row_dim, n, overlap):
+    # calculate if given n and overlap o what the smallest ci and ri is
+    sci = _smallest_tile_dim(img_col_dim, n, overlap)
+    sri = _smallest_tile_dim(img_row_dim, n, overlap)
+
+    if (_max_tile_size(sci, sri) == True):
+        if _xy_ratios(img_col_dim, img_row_dim, sci, sri, n, overlap) :
+            return({'col_tile_size' : sci, 'row_tile_size' : sri, 'n_tiles' : n, 'overlap' : overlap})
+        else:
+            smallest_row_given_sci = _smallest_tile_dim_const(sci)
+            smallest_col_given_sri = _smallest_tile_dim_const(sri)
+            
+            if sci <= smallest_col_given_sri:
+                if _xy_ratios(img_col_dim, img_row_dim, smallest_col_given_sri, sri, n, overlap):
+                    return({'col_tile_size' : smallest_col_given_sri, 'row_tile_size' : sri, 'n_tiles' : n, 'overlap' : overlap})
+            elif sri <= smallest_row_given_sci:
+                if _xy_ratios(img_col_dim, img_row_dim, sci, smallest_row_given_sci, n, overlap):
+                    return({'col_tile_size' : sci, 'row_tile_size' : smallest_row_given_sci, 'n_tiles' : n, 'overlap' : overlap})            
+        return(None)
+    
+    else:
+        return(None) 
+
+    
+
+def tile_sizer(img_col_dim, img_row_dim, overlap, max_tile_area = 5000*5000, min_tile_area = 500^2, n_tiles = range(2,11)):
+    res = None
+    
     if _max_tile_size(img_col_dim,img_row_dim) and _xy_ratio(img_col_dim, img_row_dim):
         res = {'col_tile_size' : img_col_dim, 'row_tile_size' : img_row_dim, 'n_tiles' : 1, 'overlap' : 0}
-    
-    else:    
+    else:
         for n in n_tiles:
-            for col_tile_size in reversed(np.maximum(range(round(img_col_dim/n), min_col_tile_size), np.minimum((img_row_dim*2)+1, img_col_dim+1))):
-                for row_tile_size in reversed(np.maximum(range(round(col_tile_size/2), min_row_tile_size), np.minimum(round(col_tile_size*2), img_row_dim+1))):
-                    if _test_cond(img_col_dim,img_row_dim,col_tile_size,row_tile_size, n, overlap):
-                        res = {'col_tile_size' : col_tile_size, 'row_tile_size' : row_tile_size, 'n_tiles' : n, 'overlap' : overlap}
-
+            res = combined_constraints(img_col_dim, img_row_dim, n, overlap)
+            if res != None:
+                break
+    
     if res == None:
-        raise ValueError(f"No appropriate tile size for image of size {img_col_dim} x {img_row_dim} and overlap {overlap} could be determined.")
+         raise ValueError(f"No appropriate tile size for image of size {img_col_dim} x {img_row_dim} and overlap {overlap} could be determined. The image dimensions are very different size.")
     else:
         return(res)
     
