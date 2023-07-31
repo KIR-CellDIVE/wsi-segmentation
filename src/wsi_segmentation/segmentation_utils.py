@@ -202,7 +202,7 @@ def _combine_overlapping_masks(mask_x, mask_y, dummy_var):
     gc.collect()
     return(mask_x)
 
-def predict_tiled(img, dummy_var=-99, overlap=0, cutoff=2, background_threshold= 0.1, infer_gaps = False, compartment='whole-cell', postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
+def predict_tiled(img, dummy_var=-99, overlap=0, cutoff=2, background_threshold= 0.1, infer_gaps = False, compartment='whole-cell', app=None, postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
     #   ensure the image has 4 dimensions to start with and that the last one is 2 dims
     if len(img.shape) != 4:
         raise ValueError(f"Image data must be 4D, got image of shape {img.shape}")
@@ -224,10 +224,10 @@ def predict_tiled(img, dummy_var=-99, overlap=0, cutoff=2, background_threshold=
         start_row1, start_col1, stop_row1, stop_col1 = 0, 0, fov.shape[1]+overlap_tiles, fov.shape[2]+overlap_tiles
         
         if infer_gaps:
-            _mask = tiled_segmentation_overlap(fov, start_row1, start_col1, stop_row1, stop_col1, step_size_row, step_size_col, dummy_var,overlap = overlap_tiles, cutoff = cutoff, background_threshold = background_threshold, compartment = compartment, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
+            _mask = tiled_segmentation_overlap(fov, start_row1, start_col1, stop_row1, stop_col1, step_size_row, step_size_col, dummy_var,overlap = overlap_tiles, cutoff = cutoff, background_threshold = background_threshold, compartment = compartment, app=app, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
             _mask[np.isin(_mask, [-99])] = 0
         else:
-            _mask = tiled_segmentation_overlap(fov, start_row1, start_col1, stop_row1, stop_col1, step_size_row, step_size_col, dummy_var,overlap = 0, cutoff = cutoff, background_threshold = background_threshold, compartment = compartment, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
+            _mask = tiled_segmentation_overlap(fov, start_row1, start_col1, stop_row1, stop_col1, step_size_row, step_size_col, dummy_var,overlap = 0, cutoff = cutoff, background_threshold = background_threshold, compartment = compartment, app=app, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
             _mask[np.isin(_mask, [-99])] = 0
 
         for j in range(_mask.shape[3]):
