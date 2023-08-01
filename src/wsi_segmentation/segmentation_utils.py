@@ -222,7 +222,7 @@ def predict_tiled(img, tile_size_row=None, tile_size_col=None, dummy_var=-99, ov
         
         print("The tile size chosen is: " + str(step_size_row) +"px X " + str(step_size_col) + "px\nThe overlap is: " + str(overlap_tiles) +"px")
 
-        start_row, start_col, stop_row, stop_col = 0, 0, fov.shape[1]+overlap_tiles, fov.shape[2]+overlap_tiles
+        start_row, start_col, stop_row, stop_col = 0, 0, fov.shape[1], fov.shape[2]
         
         _mask = tiled_segmentation_overlap(fov, start_row, start_col, stop_row, stop_col, step_size_row, step_size_col, dummy_var,overlap = overlap_tiles, cutoff = cutoff, background_threshold = background_threshold, compartment = compartment, app=app, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
         _mask[np.isin(_mask, [-99])] = 0
