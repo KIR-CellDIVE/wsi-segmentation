@@ -4,7 +4,7 @@ From: tensorflow/tensorflow:2.8.0-gpu
 %files
     src /opt/wsi_segmentation/src
     pyproject.toml /opt/wsi_segmentation/pyproject.toml
-    README.md /opt/wsi_segmentation/src/README.md
+    README.md /opt/wsi_segmentation/README.md
     requirements.txt requirements.txt 
 
 %environment

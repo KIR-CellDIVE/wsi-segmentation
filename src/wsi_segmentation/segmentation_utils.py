@@ -156,7 +156,7 @@ def tiled_segmentation_overlap(img, start_row, start_col, stop_row, stop_col, st
                     tmp_segmentation[0,:,:,j] = remove_boundary_mask(tmp_segmentation[0,:,:,j], cutoff, boundaries, dummy_var)
 
                     tmp_segmentation[0,:,:,j] = make_cell_mask_unique(tmp_segmentation[0,:,:,j], dummy_var, max_current_cell_id[j])
-                    max_current_cell_id[j] = np.max(tmp_segmentation[0,:,:,j])
+                    max_current_cell_id[j] = np.maximum(0,np.max(tmp_segmentation[0,:,:,j]))
             for j in range(tmp_segmentation.shape[3]):        
                 ### remove overlapping ids
                 insert_mask = np.isin(mask_array[0, r0:r1, c0:c1, j], dummy_var)
