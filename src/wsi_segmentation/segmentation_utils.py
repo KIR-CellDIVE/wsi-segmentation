@@ -82,7 +82,7 @@ def tile_sizer(img_col_dim, img_row_dim, overlap, max_tile_area = 5000*5000, min
                 break
     
     if res == None:
-         raise ValueError(f"No appropriate tile size for image of size {img_col_dim} x {img_row_dim} and overlap {overlap} could be determined. The image dimensions are very different size.")
+         raise ValueError(f"No appropriate tile size for image of size {img_col_dim} x {img_row_dim} and overlap {overlap} could be determined. Consider defining your own tile sizes via `tile_size_row` and `tile_size_col` arguments.")
     else:
         return(res)
     
@@ -202,7 +202,7 @@ def _combine_overlapping_masks(mask_x, mask_y, dummy_var):
     gc.collect()
     return(mask_x)
 
-def predict_tiled(img, dummy_var=-99, overlap=0, cutoff=2, background_threshold= 0.1, infer_gaps = False, compartment='whole-cell', app=None, postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
+def predict_tiled(img, tile_size_row=None, tile_size_col=None, dummy_var=-99, overlap=0, cutoff=2, background_threshold= 0.1, infer_gaps = False, compartment='whole-cell', app=None, postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
     #   ensure the image has 4 dimensions to start with and that the last one is 2 dims
     if len(img.shape) != 4:
         raise ValueError(f"Image data must be 4D, got image of shape {img.shape}")
@@ -216,11 +216,11 @@ def predict_tiled(img, dummy_var=-99, overlap=0, cutoff=2, background_threshold=
         overlap = overlap if infer_gaps == True else 0
         tile = tile_sizer(fov.shape[2], fov.shape[1], overlap)
         
-        step_size_row = tile["row_tile_size"]
-        step_size_col = tile["col_tile_size"]
+        step_size_row = tile["row_tile_size"] if tile_size_row == None else tile_size_row
+        step_size_col = tile["col_tile_size"] if tile_size_col == None else tile_size_col
         overlap_tiles = tile["overlap"]
         
-        print("The tile size chosen is: " + str(step_size_row) +"px X " + str(step_size_col) + "px\nThe overlap is: " + str(overlap_tiles) +"px\nThe number of tiles in each dimension is: " + str(n_tiles))    
+        print("The tile size chosen is: " + str(step_size_row) +"px X " + str(step_size_col) + "px\nThe overlap is: " + str(overlap_tiles) +"px")
 
         start_row, start_col, stop_row, stop_col = 0, 0, fov.shape[1]+overlap_tiles, fov.shape[2]+overlap_tiles
         

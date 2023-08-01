@@ -1,22 +1,19 @@
-def split_ome_tiff()
+# def split_ome_tiff()
 
 
 
 
-def create_segmentation_image()
+# def create_segmentation_image()
 
 
 
 
-def load_segmentation_image()
+# def load_segmentation_image()
 
 
 
 
-def save_segmentation_mask()
-
-
-
+# def save_segmentation_mask()
 
 def save_model_output_wrapper(segmentation_mask, output_dir, feature_name, compartment):
     save_model_output(segmentation_mask, output_dir=output_dir, feature_name=feature_name)
