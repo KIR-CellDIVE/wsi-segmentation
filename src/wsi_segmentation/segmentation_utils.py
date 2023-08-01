@@ -218,18 +218,15 @@ def predict_tiled(img, dummy_var=-99, overlap=0, cutoff=2, background_threshold=
         step_size_row = tile["row_tile_size"]
         step_size_col = tile["col_tile_size"]
         overlap_tiles = tile["overlap"]
+        overlap_tiles = tile["overlap"] if infer_gaps == True else 0
         
-        print("The tile size chosen is: " + str(step_size_row) +"px X " + str(step_size_col) + "px\nThe overlap is: " + str(overlap_tiles))    
+        print("The tile size chosen is: " + str(step_size_row) +"px X " + str(step_size_col) + "px\nThe overlap is: " + str(overlap_tiles) +"px\nThe number of tiles in each dimension is: " + str(n_tiles))    
 
-        start_row1, start_col1, stop_row1, stop_col1 = 0, 0, fov.shape[1]+overlap_tiles, fov.shape[2]+overlap_tiles
+        start_row, start_col, stop_row, stop_col = 0, 0, fov.shape[1]+overlap_tiles, fov.shape[2]+overlap_tiles
         
-        if infer_gaps:
-            _mask = tiled_segmentation_overlap(fov, start_row1, start_col1, stop_row1, stop_col1, step_size_row, step_size_col, dummy_var,overlap = overlap_tiles, cutoff = cutoff, background_threshold = background_threshold, compartment = compartment, app=app, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
-            _mask[np.isin(_mask, [-99])] = 0
-        else:
-            _mask = tiled_segmentation_overlap(fov, start_row1, start_col1, stop_row1, stop_col1, step_size_row, step_size_col, dummy_var,overlap = 0, cutoff = cutoff, background_threshold = background_threshold, compartment = compartment, app=app, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
-            _mask[np.isin(_mask, [-99])] = 0
-
+        _mask = tiled_segmentation_overlap(fov, start_row, start_col, stop_row, stop_col, step_size_row, step_size_col, dummy_var,overlap = overlap_tiles, cutoff = cutoff, background_threshold = background_threshold, compartment = compartment, app=app, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
+        _mask[np.isin(_mask, [-99])] = 0
+        
         for j in range(_mask.shape[3]):
             _mask[:,:,:,j] = make_cell_mask_unique(_mask[:,:,:,j], -99, 0)
         
