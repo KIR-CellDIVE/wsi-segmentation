@@ -213,12 +213,12 @@ def predict_tiled(img, dummy_var=-99, overlap=0, cutoff=2, background_threshold=
     #   iterate over the first dimension
     for fov_idx in range(img.shape[0]):
         fov = img[[fov_idx], ...]
+        overlap = overlap if infer_gaps == True else 0
         tile = tile_sizer(fov.shape[2], fov.shape[1], overlap)
         
         step_size_row = tile["row_tile_size"]
         step_size_col = tile["col_tile_size"]
         overlap_tiles = tile["overlap"]
-        overlap_tiles = tile["overlap"] if infer_gaps == True else 0
         
         print("The tile size chosen is: " + str(step_size_row) +"px X " + str(step_size_col) + "px\nThe overlap is: " + str(overlap_tiles) +"px\nThe number of tiles in each dimension is: " + str(n_tiles))    
 
