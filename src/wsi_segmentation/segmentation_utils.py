@@ -19,6 +19,9 @@ def _xy_ratios(img_col_dim, img_row_dim, col_tile_size, row_tile_size, n, overla
 def _max_tile_size(col_dim, row_dim, ref=5000*5000):
     return(col_dim*row_dim < ref)
 
+def _min_tile_size(col_dim, row_dim, ref=500*500):
+    return(col_dim*row_dim > ref)
+
 def _smallest_tile_dim(dim_size,n,overlap):
     return(ceil(dim_size/n + overlap - overlap/n))
 
@@ -70,7 +73,7 @@ def combined_constraints(img_col_dim, img_row_dim, n, overlap):
 
     
 
-def tile_sizer(img_col_dim, img_row_dim, overlap, max_tile_area = 5000*5000, min_tile_area = 500^2, n_tiles = range(2,11)):
+def tile_sizer(img_col_dim, img_row_dim, overlap, max_tile_area = 75000*75000, min_tile_area = 500*500, n_tiles = range(2,11)):
     res = None
     
     if _max_tile_size(img_col_dim,img_row_dim) and _xy_ratio(img_col_dim, img_row_dim):
@@ -147,9 +150,9 @@ def tiled_segmentation_overlap(img, start_row, start_col, stop_row, stop_col, st
                         
             boundaries = determine_boundaries(img, r0,r1,c0,c1)
             
-            if np.max(img[:,:,:,:]) < background_threshold:
-                tmp_segmentation = np.zeros_like(mask_array, dtype=int)[:, r0:r1, c0:c1,:]
-            else:
+            # if np.max(img[:,:,:,:]) < background_threshold:
+            #     tmp_segmentation = np.zeros_like(mask_array, dtype=int)[:, r0:r1, c0:c1,:] ##  remove this step????
+            if np.max(img[:,:,:,:]) >= background_threshold:
                 tmp_segmentation = app.predict(img[:, r0:r1, c0:c1,:], compartment=compartment, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_whole_cell)
 
                 for j in range(tmp_segmentation.shape[3]):
@@ -157,10 +160,10 @@ def tiled_segmentation_overlap(img, start_row, start_col, stop_row, stop_col, st
 
                     tmp_segmentation[0,:,:,j] = make_cell_mask_unique(tmp_segmentation[0,:,:,j], dummy_var, max_current_cell_id[j])
                     max_current_cell_id[j] = np.maximum(0,np.max(tmp_segmentation[0,:,:,j]))
-            for j in range(tmp_segmentation.shape[3]):        
-                ### remove overlapping ids
-                insert_mask = np.isin(mask_array[0, r0:r1, c0:c1, j], dummy_var)
-                mask_array[0, r0:r1, c0:c1, j][insert_mask] = tmp_segmentation[0,:,:,j][insert_mask]
+            # for j in range(tmp_segmentation.shape[3]):  ##  move that in       
+            #     ### remove overlapping ids
+                    insert_mask = np.isin(mask_array[0, r0:r1, c0:c1, j], dummy_var)
+                    mask_array[0, r0:r1, c0:c1, j][insert_mask] = tmp_segmentation[0,:,:,j][insert_mask]
 
     gc.collect()
     return(mask_array)
