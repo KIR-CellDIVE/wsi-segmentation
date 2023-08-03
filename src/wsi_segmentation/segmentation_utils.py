@@ -16,11 +16,17 @@ def _xy_ratios(img_col_dim, img_row_dim, col_tile_size, row_tile_size, n, overla
     last_row_tile = _last_tile_dim(img_row_dim, row_tile_size, n, overlap)
     return(_xy_ratio(col_tile_size, row_tile_size) and _xy_ratio(last_col_tile, row_tile_size) and _xy_ratio(col_tile_size, last_row_tile) and _xy_ratio(last_col_tile, last_row_tile))
 
-def _max_tile_size(col_dim, row_dim, ref=5000*5000):
+def _max_tile_size(col_dim, row_dim, ref=pow(10000,2)):
     return(col_dim*row_dim < ref)
 
-def _min_tile_size(col_dim, row_dim, ref=500*500):
+def _min_tile_size(col_dim, row_dim, ref=pow(500,2)):
     return(col_dim*row_dim > ref)
+
+def _min_tile_size_cond(img_col_dim, img_row_dim, col_tile_size, row_tile_size, n, overlap, ref=pow(500,2)):
+    last_col_tile = _last_tile_dim(img_col_dim, col_tile_size, n, overlap)
+    last_row_tile = _last_tile_dim(img_row_dim, row_tile_size, n, overlap)
+
+    return(_min_tile_size(last_col_tile, last_row_tile, ref=ref))
 
 def _smallest_tile_dim(dim_size,n,overlap):
     return(ceil(dim_size/n + overlap - overlap/n))
@@ -48,23 +54,23 @@ def _overhang(dim_size, tile_dim_size, n, overlap):
 def _last_tile_dim(dim_size, tile_dim_size, n, overlap):
     return(tile_dim_size - _overhang(dim_size, tile_dim_size, n, overlap))
 
-def combined_constraints(img_col_dim, img_row_dim, n, overlap):
+def combined_constraints(img_col_dim, img_row_dim, n, overlap, max_tile_area=pow(10000,2), min_tile_area=pow(500,2)):
     # calculate if given n and overlap o what the smallest ci and ri is
     sci = _smallest_tile_dim(img_col_dim, n, overlap)
     sri = _smallest_tile_dim(img_row_dim, n, overlap)
 
-    if (_max_tile_size(sci, sri) == True):
-        if _xy_ratios(img_col_dim, img_row_dim, sci, sri, n, overlap) :
+    if (_max_tile_size(sci, sri, ref=max_tile_area) == True):
+        if _xy_ratios(img_col_dim, img_row_dim, sci, sri, n, overlap) and _min_tile_size_cond(img_col_dim, img_row_dim, sci, sri, n, overlap, ref=min_tile_area):
             return({'col_tile_size' : sci, 'row_tile_size' : sri, 'n_tiles' : n, 'overlap' : overlap})
         else:
             smallest_row_given_sci = _smallest_tile_dim_const(sci)
             smallest_col_given_sri = _smallest_tile_dim_const(sri)
             
             if sci <= smallest_col_given_sri:
-                if _xy_ratios(img_col_dim, img_row_dim, smallest_col_given_sri, sri, n, overlap):
+                if _xy_ratios(img_col_dim, img_row_dim, smallest_col_given_sri, sri, n, overlap) and _min_tile_size_cond(img_col_dim, img_row_dim, smallest_col_given_sri, sri, n, overlap, ref=min_tile_area):
                     return({'col_tile_size' : smallest_col_given_sri, 'row_tile_size' : sri, 'n_tiles' : n, 'overlap' : overlap})
             elif sri <= smallest_row_given_sci:
-                if _xy_ratios(img_col_dim, img_row_dim, sci, smallest_row_given_sci, n, overlap):
+                if _xy_ratios(img_col_dim, img_row_dim, sci, smallest_row_given_sci, n, overlap) and _min_tile_size_cond(img_col_dim, img_row_dim, sci, smallest_row_given_sci, n, overlap, ref=min_tile_area):
                     return({'col_tile_size' : sci, 'row_tile_size' : smallest_row_given_sci, 'n_tiles' : n, 'overlap' : overlap})            
         return(None)
     
@@ -73,14 +79,14 @@ def combined_constraints(img_col_dim, img_row_dim, n, overlap):
 
     
 
-def tile_sizer(img_col_dim, img_row_dim, overlap, max_tile_area = 75000*75000, min_tile_area = 500*500, n_tiles = range(2,11)):
+def tile_sizer(img_col_dim, img_row_dim, overlap, max_tile_area = pow(10000,2), min_tile_area = pow(500,2), n_tiles = range(2,11)):
     res = None
     
-    if _max_tile_size(img_col_dim,img_row_dim) and _xy_ratio(img_col_dim, img_row_dim):
+    if _max_tile_size(img_col_dim,img_row_dim, ref=max_tile_area) and _xy_ratio(img_col_dim, img_row_dim):
         res = {'col_tile_size' : img_col_dim, 'row_tile_size' : img_row_dim, 'n_tiles' : 1, 'overlap' : 0}
     else:
         for n in n_tiles:
-            res = combined_constraints(img_col_dim, img_row_dim, n, overlap)
+            res = combined_constraints(img_col_dim, img_row_dim, n, overlap, max_tile_area=max_tile_area, min_tile_area=min_tile_area)
             if res != None:
                 break
     
@@ -145,8 +151,8 @@ def tiled_segmentation_overlap(img, start_row, start_col, stop_row, stop_col, st
 
     max_current_cell_id = np.zeros(mask_array.shape[3]) 
     
-    for row in range(start_row, stop_row, step_size_row - overlap):
-        for col in range(start_col, stop_col, step_size_col - overlap):
+    for row in range(start_row, stop_row - overlap, step_size_row - overlap):
+        for col in range(start_col, stop_col - overlap, step_size_col - overlap):
             r0, r1 = np.maximum(row, 0), np.minimum(np.maximum(row, 0) + step_size_row, img.shape[1])
             c0, c1 = np.maximum(col, 0), np.minimum(np.maximum(col, 0) + step_size_col, img.shape[2])
                         
@@ -154,8 +160,8 @@ def tiled_segmentation_overlap(img, start_row, start_col, stop_row, stop_col, st
             
             # if np.max(img[:,:,:,:]) < background_threshold:
             #     tmp_segmentation = np.zeros_like(mask_array, dtype=int)[:, r0:r1, c0:c1,:] ##  remove this step????
-            if np.max(img[:,:,:,:]) >= background_threshold:
-                tmp_segmentation = app.predict(img[:, r0:r1, c0:c1,:], compartment=compartment, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_whole_cell)
+            if np.max(img[:, r0:r1, c0:c1,:]) >= background_threshold:
+                tmp_segmentation = app.predict(img[:, r0:r1, c0:c1,:], compartment=compartment, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
 
                 for j in range(tmp_segmentation.shape[3]):
                     tmp_segmentation[0,:,:,j] = remove_boundary_mask(tmp_segmentation[0,:,:,j], cutoff, boundaries, dummy_var)
@@ -207,7 +213,7 @@ def _combine_overlapping_masks(mask_x, mask_y, dummy_var):
     gc.collect()
     return(mask_x)
 
-def predict_tiled(img, tile_size_row=None, tile_size_col=None, dummy_var=-99, overlap=0, cutoff=2, background_threshold= 0.1, infer_gaps = False, compartment='whole-cell', app=None, postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
+def predict_tiled(img, tile_size_row=None, tile_size_col=None, dummy_var=-99, overlap=0, cutoff=2, background_threshold= 0.1, max_tile_area=None, infer_gaps = False, compartment='whole-cell', app=None, postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
     #   ensure the image has 4 dimensions to start with and that the last one is 2 dims
     if len(img.shape) != 4:
         raise ValueError(f"Image data must be 4D, got image of shape {img.shape}")
@@ -219,11 +225,16 @@ def predict_tiled(img, tile_size_row=None, tile_size_col=None, dummy_var=-99, ov
     for fov_idx in range(img.shape[0]):
         fov = img[[fov_idx], ...]
         overlap = overlap if infer_gaps == True else 0
-        tile = tile_sizer(fov.shape[2], fov.shape[1], overlap)
-        
-        step_size_row = tile["row_tile_size"] if tile_size_row == None else tile_size_row
-        step_size_col = tile["col_tile_size"] if tile_size_col == None else tile_size_col
-        overlap_tiles = tile["overlap"]
+        if (tile_size_row) == None or (tile_size_col == None):
+            tile = tile_sizer(fov.shape[2], fov.shape[1], overlap) if max_tile_area == None else tile_sizer(fov.shape[2], fov.shape[1], overlap, max_tile_area=max_tile_area)
+            step_size_row = tile["row_tile_size"]
+            step_size_col = tile["col_tile_size"]
+            overlap_tiles = tile["overlap"]
+        else:
+            step_size_row = tile_size_row
+            step_size_col = tile_size_col
+            overlap_tiles = overlap
+
         
         print("The tile size chosen is: " + str(step_size_row) +"px X " + str(step_size_col) + "px\nThe overlap is: " + str(overlap_tiles) +"px")
 
