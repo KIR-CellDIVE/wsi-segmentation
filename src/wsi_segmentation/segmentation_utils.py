@@ -90,7 +90,7 @@ def tile_sizer(img_col_dim, img_row_dim, overlap, max_tile_area = 75000*75000, m
         return(res)
     
 
-def remove_boundary_mask(arr, boundary, boundary_sides, dummy_var):
+def remove_boundary_mask(arr, boundary, boundary_sides, dummy_var, overlap):
     boundary_ids = list()
     for boundary_side in boundary_sides:
         if "t" in boundary_side:
@@ -116,6 +116,8 @@ def remove_boundary_mask(arr, boundary, boundary_sides, dummy_var):
     boundary_ids = np.unique(boundary_ids)
     boundary_ids= [i for i in boundary_ids if i != 0]
     cleaned_arr = np.where(np.isin(arr, boundary_ids), dummy_var, arr)
+    ## replace zeros in boundary wit -99
+
     return(cleaned_arr)
     
 
@@ -143,10 +145,10 @@ def tiled_segmentation_overlap(img, start_row, start_col, stop_row, stop_col, st
 
     max_current_cell_id = np.zeros(mask_array.shape[3]) 
     
-    for row in range(start_row, stop_row, step_size_row):
-        for col in range(start_col, stop_col, step_size_col):
-            r0, r1 = np.maximum(row - overlap, 0), np.minimum(np.maximum(row - overlap, 0) + step_size_row, img.shape[1])
-            c0, c1 = np.maximum(col - overlap, 0), np.minimum(np.maximum(col - overlap, 0) + step_size_col, img.shape[2])
+    for row in range(start_row, stop_row, step_size_row - overlap):
+        for col in range(start_col, stop_col, step_size_col - overlap):
+            r0, r1 = np.maximum(row, 0), np.minimum(np.maximum(row, 0) + step_size_row, img.shape[1])
+            c0, c1 = np.maximum(col, 0), np.minimum(np.maximum(col, 0) + step_size_col, img.shape[2])
                         
             boundaries = determine_boundaries(img, r0,r1,c0,c1)
             
@@ -158,7 +160,7 @@ def tiled_segmentation_overlap(img, start_row, start_col, stop_row, stop_col, st
                 for j in range(tmp_segmentation.shape[3]):
                     tmp_segmentation[0,:,:,j] = remove_boundary_mask(tmp_segmentation[0,:,:,j], cutoff, boundaries, dummy_var)
 
-                    tmp_segmentation[0,:,:,j] = make_cell_mask_unique(tmp_segmentation[0,:,:,j], dummy_var, max_current_cell_id[j])
+                    tmp_segmentation[0,:,:,j] = make_cell_mask_unique(tmp_segmentation[0,:,:,j], dummy_var, max_current_cell_id[j], overlap)
                     max_current_cell_id[j] = np.maximum(0,np.max(tmp_segmentation[0,:,:,j]))
             # for j in range(tmp_segmentation.shape[3]):  ##  move that in       
             #     ### remove overlapping ids
