@@ -85,7 +85,7 @@ def tile_sizer(img_col_dim, img_row_dim, overlap, max_tile_area = 75000*75000, m
                 break
     
     if res == None:
-         raise ValueError(f"No appropriate tile size for image of size {img_col_dim} x {img_row_dim} and overlap {overlap} could be determined. Consider defining your own tile sizes via `tile_size_row` and `tile_size_col` arguments.")
+         raise ValueError(f"No appropriate tile size for image of size {img_col_dim} x {img_row_dim} and overlap {overlap} could be automatically determined. Consider defining your own tile sizes via `tile_size_row` and `tile_size_col` arguments.")
     else:
         return(res)
     
@@ -164,7 +164,7 @@ def tiled_segmentation_overlap(img, start_row, start_col, stop_row, stop_col, st
                     max_current_cell_id[j] = np.maximum(0,np.max(tmp_segmentation[0,:,:,j]))
             # for j in range(tmp_segmentation.shape[3]):  ##  move that in       
             #     ### remove overlapping ids
-                    insert_mask = np.isin(mask_array[0, r0:r1, c0:c1, j], dummy_var)
+                    insert_mask = np.isin(mask_array[0, r0:r1, c0:c1, j], [dummy_var, 0])
                     mask_array[0, r0:r1, c0:c1, j][insert_mask] = tmp_segmentation[0,:,:,j][insert_mask]
 
     gc.collect()
