@@ -90,7 +90,7 @@ def tile_sizer(img_col_dim, img_row_dim, overlap, max_tile_area = 75000*75000, m
         return(res)
     
 
-def remove_boundary_mask(arr, boundary, boundary_sides, dummy_var, overlap):
+def remove_boundary_mask(arr, boundary, boundary_sides, dummy_var):
     boundary_ids = list()
     for boundary_side in boundary_sides:
         if "t" in boundary_side:
