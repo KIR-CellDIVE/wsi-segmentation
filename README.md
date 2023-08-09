@@ -13,7 +13,7 @@ Following this official [guide](https://learn.microsoft.com/en-us/windows/wsl/in
 wsl --install -d Ubuntu
 ```
 
-It will ask you to create a user account and set a password. Make sure that you keep note of these as they are not linked to you Windows login. The next steps assumes you have set the user name to `ubuntu`
+It will ask you to create a user account and set a password. Make sure that you keep note of these as they are not linked to you Windows login. The next steps assumes you have set the user name to be `ubuntu`, so adjust the following command if you chose a different username.
 
 To enter the newly created WSL enviroment `Ubuntu` as the user `ubuntu` you set in the previous step run the following in the `PowerShell`:
 
