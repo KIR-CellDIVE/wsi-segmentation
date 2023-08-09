@@ -119,7 +119,7 @@ or
 wsi-segmentation-cpu ## for cpu accelerated segmentation
 ```
 
-> **NOTE:** You can pass additional singularity arguments if you want. For example to bind a results folder to a directoty `/data` to make it more easily accessible inside the notebook you can start the notebooks as follows:
+> **NOTE:** You can pass additional singularity arguments if you want. For example to bind a results folder to a directoty `/data` to make it more easily accessible inside the notebook. In `WSL` the `C:` drive, `D:` drive, etc are mounted and located at `/mnt/c`, `/mnt/d`, etc, respectively. To mount your data folder to `/data` start the notebooks as follows:
 >```bash 
 > wsi-segmentation-gpu --bind /path/to/result:/data
 >```
