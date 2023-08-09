@@ -1,6 +1,6 @@
 # Whole slide image segmentation of CellDIVE multiplex microscopy images
 
-This work aims to facilitate and simplify the intial step of image analysis that is whole slide image segmentation for reseachers using the CellDIVE multiplex imaging platform. This segmentation pipeline uses well-established `deepcell` model. It also is part of the STAR protocol paper (doi:?????).
+This work aims to facilitate and simplify the intial step of image analysis that is whole slide image segmentation for reseachers using the CellDIVE multiplex imaging platform. This segmentation pipeline uses well-established `DeepCell` `Mesmer` model. It also is part of the STAR protocol paper (doi:?????).
 
 ## Installation
 
