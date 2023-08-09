@@ -123,7 +123,7 @@ wsi-segmentation-cpu ## for cpu accelerated segmentation
 >```bash 
 > wsi-segmentation-gpu --bind /path/to/result:/data
 >```
-> #
+>
 
 You should now see a link similiar to `http://127.0.0.1:9999/lab?token=...`, copy it and open it in your preferred browser. Then open the `01_wsi_segmentation.ipnyb` notebook and follow the instructions to perform cell segmentation of your CellDIVE slides utilising the `deepcell` segmentation model and obtain a per-cell marker expression table.
 
