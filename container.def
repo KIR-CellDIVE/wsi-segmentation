@@ -45,12 +45,6 @@ From: tensorflow/tensorflow:2.8.0-gpu
     && wget https://deepcell-data.s3-us-west-1.amazonaws.com/saved-models/MultiplexSegmentation-9.tar.gz \
     && tar -xvzf MultiplexSegmentation-9.tar.gz \
     && rm MultiplexSegmentation-9.tar.gz
-    
-    # install bioformats cli tools
-    cd /opt \
-    && wget https://downloads.openmicroscopy.org/bio-formats/6.13.0/artifacts/bftools.zip \
-    && unzip bftools.zip \
-    && rm bftools.zip
 
 %runscript
     jupyter lab --ip=0.0.0.0 --no-browser --port=$LISTEN_PORT
