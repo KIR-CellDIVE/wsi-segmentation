@@ -129,3 +129,14 @@ You should now see a link similiar to `http://127.0.0.1:9999/lab?token=...`, cop
 
 ## What to do next after the segmentation 
 By the end of the notebook you should have created file and folder structure, a segmentation mask and per-cell statistic which can be plugged into the `ark-analysis` toolbox ([Documentation](https://ark-analysis.readthedocs.io/en/latest/)/[GitHub](https://github.com/angelolab/ark-analysis)) starting from the [second notebook](https://github.com/angelolab/ark-analysis#2-pixel-clustering-with-pixie). Alternatively, you might also want to consider other whole slide image multiplex analysis pipelines such as [link](https://github.com/immunogenomics/FibroblastAtlas2022).
+
+## References and Acknowledgments
+
+The work in this repository was partly inspired by and the whole slide segmentation notebook loosely adapted in it's structure from the `ark-analysis` toolbox (https://github.com/angelolab/ark-analysis).
+
+
+## How to cite
+
+If you use this work was part of your analysis please cite this `wsi-segmentation` repo directly (https://github.com/KIR-CellDIVE/wsi-segmentation) as well as the accompanying publication:
+
+* Authors, Title, Journal, Year, DOI
