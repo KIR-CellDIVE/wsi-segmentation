@@ -213,7 +213,7 @@ def _combine_overlapping_masks(mask_x, mask_y, dummy_var):
     gc.collect()
     return(mask_x)
 
-def predict_tiled(img, tile_size_row=None, tile_size_col=None, dummy_var=-99, overlap=0, cutoff=2, background_threshold= 0.1, max_tile_area=None, infer_gaps = False, compartment='whole-cell', app=None, postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
+def predict_tiled(img, tile_size_row=None, tile_size_col=None, dummy_var=-99, overlap=0, cutoff=2, background_threshold= 0.1, max_tile_area=None, infer_gaps = False, compartment='whole-cell', cell_size_threshold=None, app=None, postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
     #   ensure the image has 4 dimensions to start with and that the last one is 2 dims
     if len(img.shape) != 4:
         raise ValueError(f"Image data must be 4D, got image of shape {img.shape}")
@@ -243,6 +243,12 @@ def predict_tiled(img, tile_size_row=None, tile_size_col=None, dummy_var=-99, ov
         _mask = tiled_segmentation_overlap(fov, start_row, start_col, stop_row, stop_col, step_size_row, step_size_col, dummy_var,overlap = overlap_tiles, cutoff = cutoff, background_threshold = background_threshold, compartment = compartment, app=app, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
         _mask[np.isin(_mask, [-99])] = 0
         
+        ## remove small cells
+        if (cell_size_threshold != None) and (compartment == 'whole-cell'):
+            pixel_count_per_id = np.unique(_mask, return_counts =True)
+            low_pixel_count_ids = pixel_count_per_id[0][pixel_count_per_id[1] < cell_size_threshold]
+            _mask[np.isin(_mask, low_pixel_count_ids)] = 0
+
         for j in range(_mask.shape[3]):
             _mask[:,:,:,j] = make_cell_mask_unique(_mask[:,:,:,j], -99, 0)
         
