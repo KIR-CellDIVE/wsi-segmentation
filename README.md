@@ -92,6 +92,9 @@ In order to make it easier to run the container in the future we create to bash 
 ### make sure ~/.local/bin directory exists ###
 mkdir -p ~/.local/bin
 
+### reload ~/.profile to add ~/.local/bin to $PATH ###
+source ~/.profile
+
 ### create bash scripts in ~/.local/bin ###
 echo "#! /bin/bash
 ## run wsi-segmentation with GPU acceleration
