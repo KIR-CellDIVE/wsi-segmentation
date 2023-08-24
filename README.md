@@ -57,7 +57,7 @@ Next, we download and install `SingularityCE` and link the `nvidia-container-cli
 ```bash
 # Install SingularityCE ###
 mkdir ~/Downloads
-cd ~/Downloads || exit
+cd ~/Downloads
 wget https://github.com/sylabs/singularity/releases/download/v${SINGULARITY_VER}/singularity-ce_${SINGULARITY_VER}-${UBUNTU_CODENAME}_amd64.deb
 sudo apt install ./singularity-ce_${SINGULARITY_VER}-${UBUNTU_CODENAME}_amd64.deb
 
@@ -73,7 +73,7 @@ We start by creating a `builds` folder in the HOME `~` directory and cloning/dow
 ```bash
 ### download repository from github ###
 mkdir ~/builds
-cd ~/builds || exit
+cd ~/builds
 git clone https://github.com/KIR-CellDIVE/wsi-segmentation.git
 #######################################
 ```
@@ -81,7 +81,7 @@ Next, we build a singularity container called `wsi_segmentation.sif` based on de
 
 ```bash
 ### build singularity container ###
-cd wsi-segmentation || exit
+cd wsi-segmentation
 sudo singularity build wsi_segmentation.sif container.def
 ###################################
 ```
