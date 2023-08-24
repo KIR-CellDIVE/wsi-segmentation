@@ -3,6 +3,7 @@ From: tensorflow/tensorflow:2.8.0-gpu
 
 %files
     src /opt/wsi_segmentation/src
+    notebooks /opt/wsi_segmentation/notebooks
     pyproject.toml /opt/wsi_segmentation/pyproject.toml
     README.md /opt/wsi_segmentation/README.md
     requirements.txt requirements.txt 
@@ -47,7 +48,7 @@ From: tensorflow/tensorflow:2.8.0-gpu
     && rm MultiplexSegmentation-9.tar.gz
 
 %runscript
-    jupyter lab --ip=0.0.0.0 --no-browser --port=$LISTEN_PORT
+    jupyter lab --ip=0.0.0.0 --no-browser --port=$LISTEN_PORT --notebook-dir="/opt/wsi-segmentation/notebooks"
 
 %labels
     Author jonas.mackerodt@kennedy.ox.ac.uk
