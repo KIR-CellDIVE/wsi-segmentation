@@ -1,13 +1,13 @@
 # Whole slide image segmentation of CellDIVE multiplex microscopy images
 
-This work aims to facilitate and simplify the intial step of image analysis that is whole slide image segmentation for reseachers using the CellDIVE multiplex imaging platform. This segmentation pipeline uses well-established `DeepCell` `Mesmer` model. This segmentation pipeline is also part of a STAR protocol publication (doi:?????).
+This work aims to facilitate and simplify the initial step of image analysis that is whole slide image segmentation for researchers using the CellDIVE multiplex imaging platform. This segmentation pipeline uses well-established `DeepCell` `Mesmer` model. This segmentation pipeline is also part of a STAR protocol publication (doi:?????).
 
 ## Installation
 
 ### Windows specific steps
-If you are using Windows make sure you have `WSL` ([link](https://learn.microsoft.com/en-us/windows/wsl/install)) and the latest `NVIDIA CUDA` driver ([link](https://www.nvidia.co.uk/Download/index.aspx)) for your GPU (if you have one in your system) installed.
+If you are using Windows make sure you have `Windows Subsystem for Linux (WSL)` ([link](https://learn.microsoft.com/en-us/windows/wsl/install)) and the latest `NVIDIA CUDA` driver ([link](https://www.nvidia.co.uk/Download/index.aspx)) for your GPU (if you have one in your system) installed.
 
-Following this official [guide](https://learn.microsoft.com/en-us/windows/wsl/install), install `WSL` and create a new `Ubuntu`-based `WSL` evironment called `Ubuntu` by opening `PowerShell` and simply running:
+Following this official [guide](https://learn.microsoft.com/en-us/windows/wsl/install), install `WSL` and create a new `Ubuntu`-based `WSL` environment called `Ubuntu` by opening `PowerShell` and simply running:
 
 ```bash
 wsl --install -d Ubuntu
@@ -15,7 +15,7 @@ wsl --install -d Ubuntu
 
 It will ask you to create a user account and set a password. Make sure that you keep note of these as they are not linked to you Windows login. The next steps assumes you have set the user name to be `ubuntu`, so adjust the following command if you chose a different username.
 
-To enter the newly created WSL enviroment `Ubuntu` as the user `ubuntu` you set in the previous step run the following in the `PowerShell`:
+To enter the newly created WSL environment `Ubuntu` as the user `ubuntu` you set in the previous step run the following in the `PowerShell`:
 
 ```bash
 wsl -d Ubuntu -u ubuntu
@@ -96,7 +96,7 @@ cd wsi-segmentation \
 ###################################
 ```
 
-In order to make it easier to run the container in the future we create to bash scripts `wsi-segmentation-gpu` and `wsi-segmentation-cpu` in `~/.local/bin` that can be simpled called from anywhere inside the console. Adapt these command if you decided to download and build the container in a different directory. (Skip this step if rather start the containers directly yourself). 
+In order to make it easier to run the container in the future we create to bash scripts `wsi-segmentation-gpu` and `wsi-segmentation-cpu` in `~/.local/bin` that can simply be called from anywhere inside the console. Adapt these command if you decided to download and build the container in a different directory. (Skip this step if rather start the containers directly yourself). 
 
 We make sure that `~/.local/bin` exists.
 ```bash
@@ -134,22 +134,29 @@ source ~/.profile
 
 ## Run whole slide image segmentation
 
-If you have followed the installation step you should be able to run the whole slide image segmentation jupyter notebook server by simply typing either
+If you have followed the installation step you should be able to run the whole slide image segmentation jupyter notebook server now. If you on `Windows` and you use `WSL`, first open `PowerShell` and enter the previously created WSL environment `Ubuntu` as the user `ubuntu` if you haven't already done so:
+
+```bash
+wsl -d Ubuntu -u ubuntu
+```
+
+Once you are in the `WSL` environment you can run faster GPU-accelerated segmentation (if you have a NVIDIA GPU) by typing
 ```bash
 wsi-segmentation-gpu ## for gpu accelerated segmentation
 ```
-or
+
+or only using the CPU to to perform segmentation by typing
 ```bash
 wsi-segmentation-cpu ## for cpu accelerated segmentation
 ```
 
-> **NOTE:** You can pass additional singularity arguments if you want. For example to bind a results folder to a directoty `/data` to make it more easily accessible inside the notebook. In `WSL` the `C:` drive, `D:` drive, etc are mounted and located at `/mnt/c`, `/mnt/d`, etc, respectively. To mount your data folder to `/data` start the notebooks as follows:
+> You can pass additional singularity arguments if you want. For example to bind a results folder to a directoty `/data` to make it more easily accessible inside the notebook. In `WSL` the `C:` drive, `D:` drive, etc are mounted and located at `/mnt/c`, `/mnt/d`, etc, respectively. To mount your data folder to `/data` start the notebooks as follows:
 >```bash 
 > wsi-segmentation-gpu --bind /path/to/result:/data
 >```
 >
 
-You should now see a link similiar to `http://127.0.0.1:9999/lab?token=...`, copy it and open it in your preferred browser. Then open the `01_wsi_segmentation.ipnyb` notebook and follow the instructions to perform cell segmentation of your CellDIVE slides utilising the `deepcell` segmentation model and obtain a per-cell marker expression table.
+You should now see a link similar to `http://127.0.0.1:9999/lab?token=...`, copy it and open it in your preferred browser. Then open the `01_wsi_segmentation.ipnyb` notebook and follow the instructions to perform cell segmentation of your CellDIVE slides utilising the `deepcell` segmentation model and obtain a per-cell marker expression table.
 
 ## What to do next after the segmentation 
 By the end of the notebook you should have created file and folder structure, a segmentation mask and per-cell statistic which can be plugged into the `ark-analysis` toolbox ([Documentation](https://ark-analysis.readthedocs.io/en/latest/)/[GitHub](https://github.com/angelolab/ark-analysis)) starting from the [second notebook](https://github.com/angelolab/ark-analysis#2-pixel-clustering-with-pixie). Alternatively, you might also want to consider other whole slide image multiplex analysis pipelines such as [link](https://github.com/immunogenomics/FibroblastAtlas2022).
