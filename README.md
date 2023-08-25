@@ -69,7 +69,7 @@ install `SingularityCE`
 ```bash
 sudo apt install ./singularity-ce_${SINGULARITY_VER}-${UBUNTU_CODENAME}_amd64.deb
 ```
-and link the `nvidia-container-cli` tool into it.
+and link the `nvidia-container-cli` tool with `Singularity`.
 ```bash
 # Set path for nvidia-container-cli in singularity.conf
 sudo sed -i "s#\# nvidia\-container\-cli path =.*#nvidia-container-cli path = $( which nvidia-container-cli )#" /etc/singularity/singularity.conf
