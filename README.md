@@ -38,29 +38,39 @@ UBUNTU_VERSION=$( lsb_release -rs )
 Next, we install the `libnvidia-container-tools`. As part of this, we have to add and sign a new repository provided by `NVIDIA`.
 
 ```bash
-# Install libnvidia-container-tools ###
 ## Fetch and add the signing key
 curl -s -L https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/libnvidia-container.gpg
+```
+```bash
 ## Fetch the repository file
 curl -s -L https://nvidia.github.io/libnvidia-container/ubuntu${UBUNTU_VERSION}/libnvidia-container.list | sudo tee /etc/apt/sources.list.d/libnvidia-container.list
+```
+```bash
 ## Assign new signing key to repository
 sudo sed -i 's#deb http#deb [signed\-by=/etc/apt/trusted\.gpg\.d/libnvidia-container\.gpg] http#' /etc/apt/sources.list.d/libnvidia-container.list
+```
+```bash
 ## Get the metadata from the new repositories
 sudo apt update
-## Install the package we need
+```
+```bash
+## Install libnvidia-container-tools
 sudo apt install libnvidia-container-tools
 #######################################
 ```
 
-Next, we download and install `SingularityCE` and link the `nvidia-container-cli` tool into it:
-
+Next, we download,
 ```bash
-# Install SingularityCE ###
-mkdir ~/Downloads
-cd ~/Downloads
-wget https://github.com/sylabs/singularity/releases/download/v${SINGULARITY_VER}/singularity-ce_${SINGULARITY_VER}-${UBUNTU_CODENAME}_amd64.deb
+mkdir -p ~/Downloads \
+&& cd ~/Downloads \
+&& wget https://github.com/sylabs/singularity/releases/download/v${SINGULARITY_VER}/singularity-ce_${SINGULARITY_VER}-${UBUNTU_CODENAME}_amd64.deb
+```
+install `SingularityCE`
+```bash
 sudo apt install ./singularity-ce_${SINGULARITY_VER}-${UBUNTU_CODENAME}_amd64.deb
-
+```
+and link the `nvidia-container-cli` tool into it.
+```bash
 # Set path for nvidia-container-cli in singularity.conf
 sudo sed -i "s#\# nvidia\-container\-cli path =.*#nvidia-container-cli path = $( which nvidia-container-cli )#" /etc/singularity/singularity.conf
 ###########################
@@ -72,43 +82,54 @@ We start by creating a `builds` folder in the HOME `~` directory and cloning/dow
 
 ```bash
 ### download repository from github ###
-mkdir ~/builds
-cd ~/builds
-git clone https://github.com/KIR-CellDIVE/wsi-segmentation.git
+mkdir -p ~/builds \
+&& cd ~/builds \
+&& git clone https://github.com/KIR-CellDIVE/wsi-segmentation.git
 #######################################
 ```
 Next, we build a singularity container called `wsi_segmentation.sif` based on definition file `container.def`:
 
 ```bash
 ### build singularity container ###
-cd wsi-segmentation
-sudo singularity build wsi_segmentation.sif container.def
+cd wsi-segmentation \
+&& sudo singularity build wsi_segmentation.sif container.def
 ###################################
 ```
 
 In order to make it easier to run the container in the future we create to bash scripts `wsi-segmentation-gpu` and `wsi-segmentation-cpu` in `~/.local/bin` that can be simpled called from anywhere inside the console. Adapt these command if you decided to download and build the container in a different directory. (Skip this step if rather start the containers directly yourself). 
 
+We make sure that `~/.local/bin` exists.
 ```bash
 ### make sure ~/.local/bin directory exists ###
 mkdir -p ~/.local/bin
+```
+Then, we create two bash scripts in `~/.local/bin` to make starting the container to run the segmentation more straightforward.
 
-### reload ~/.profile to add ~/.local/bin to $PATH ###
-source ~/.profile
-
-### create bash scripts in ~/.local/bin ###
+```bash
 echo "#! /bin/bash
 ## run wsi-segmentation with GPU acceleration
-singularity run \"\$@\" --nv --nvccli $HOME/builds/wsi-segmentation/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-gpu
+[ -d "/mnt" ] && singularity \"\$@\" run --bind /mnt:/opt/analysis/drives --bind /:/opt/analysis/host --nv --nvccli $HOME/builds/wsi-segmentation/wsi_segmentation.sif || singularity run \"\$@\" --bind /:/opt/analysis/host --nv --nvccli $HOME/builds/wsi-segmentation/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-gpu
+```
 
+```bash
 echo "#! /bin/bash
 ## run wsi-segmentation without GPU acceleration
-singularity run \"\$@\" $HOME/builds/wsi-segmentation/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-cpu
+[ -d "/mnt" ] && singularity run \"\$@\" --bind /mnt:/opt/analysis/drives --bind /:/opt/analysis/host $HOME/builds/wsi-segmentation/wsi_segmentation.sif || singularity run \"\$@\" --bind /:/opt/analysis/host $HOME/builds/wsi-segmentation/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-cpu
+```
+Lastly, we make these two bash scripts executable
 
+```bash
 ### make bash scripts executable ###
 chmod +x ~/.local/bin/wsi-segmentation-gpu
 chmod +x ~/.local/bin/wsi-segmentation-cpu
 ###############################################
 ```
+and reload the `~/.profile` file.
+```bash
+### reload ~/.profile to add ~/.local/bin to $PATH ###
+source ~/.profile
+```
+
 
 
 ## Run whole slide image segmentation
