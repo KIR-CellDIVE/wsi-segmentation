@@ -35,72 +35,63 @@ UBUNTU_CODENAME=$( lsb_release -cs )
 UBUNTU_VERSION=$( lsb_release -rs )
 ```
 
-Next, we install the `libnvidia-container-tools`. As part of this, we have to add and sign a new repository provided by `NVIDIA`.
+Next, we install the `libnvidia-container-tools`. As part of this, we have to add and sign a new repository provided by `NVIDIA`. To do so, we first fetch and add the signing key:
 
 ```bash
-## Fetch and add the signing key
 curl -s -L https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/libnvidia-container.gpg
 ```
+Then, fetch the repository file
 ```bash
-## Fetch the repository file
 curl -s -L https://nvidia.github.io/libnvidia-container/ubuntu${UBUNTU_VERSION}/libnvidia-container.list | sudo tee /etc/apt/sources.list.d/libnvidia-container.list
 ```
+and assign the new signing key to repository:
 ```bash
-## Assign new signing key to repository
 sudo sed -i 's#deb http#deb [signed\-by=/etc/apt/trusted\.gpg\.d/libnvidia-container\.gpg] http#' /etc/apt/sources.list.d/libnvidia-container.list
 ```
+Now, we update the metadata from the new repositories
 ```bash
-## Get the metadata from the new repositories
 sudo apt update
 ```
+and install libnvidia-container-tools:
 ```bash
-## Install libnvidia-container-tools
 sudo apt install libnvidia-container-tools
-#######################################
 ```
 
-Next, we download,
+Next, we download `SingularityCE`,
 ```bash
 mkdir -p ~/Downloads \
 && cd ~/Downloads \
 && wget https://github.com/sylabs/singularity/releases/download/v${SINGULARITY_VER}/singularity-ce_${SINGULARITY_VER}-${UBUNTU_CODENAME}_amd64.deb
 ```
-install `SingularityCE`
+install it
 ```bash
 sudo apt install ./singularity-ce_${SINGULARITY_VER}-${UBUNTU_CODENAME}_amd64.deb
 ```
-and link the `nvidia-container-cli` tool with `Singularity`.
+and link the `nvidia-container-cli` tool with `Singularity` by setting the path for nvidia-container-cli in singularity.conf
 ```bash
-# Set path for nvidia-container-cli in singularity.conf
 sudo sed -i "s#\# nvidia\-container\-cli path =.*#nvidia-container-cli path = $( which nvidia-container-cli )#" /etc/singularity/singularity.conf
-###########################
 ```
 
 ### Build whole slide image segmentation container
 
-We start by creating a `builds` folder in the HOME `~` directory and cloning/downloading this repository into it: 
+We start by creating a `builds` folder in the HOME `~` directory and cloning/downloading this repository from github: 
 
 ```bash
-### download repository from github ###
 mkdir -p ~/builds \
 && cd ~/builds \
 && git clone https://github.com/KIR-CellDIVE/wsi-segmentation.git
-#######################################
 ```
 Next, we build a singularity container called `wsi_segmentation.sif` based on definition file `container.def`:
 
 ```bash
-### build singularity container ###
 cd wsi-segmentation \
 && sudo singularity build wsi_segmentation.sif container.def
-###################################
 ```
 
 In order to make it easier to run the container in the future we create to bash scripts `wsi-segmentation-gpu` and `wsi-segmentation-cpu` in `~/.local/bin` that can simply be called from anywhere inside the console. Adapt these command if you decided to download and build the container in a different directory. (Skip this step if rather start the containers directly yourself). 
 
 We make sure that `~/.local/bin` exists.
 ```bash
-### make sure ~/.local/bin directory exists ###
 mkdir -p ~/.local/bin
 ```
 Then, we create two bash scripts in `~/.local/bin` to make starting the container to run the segmentation more straightforward.
@@ -119,14 +110,11 @@ echo "#! /bin/bash
 Lastly, we make these two bash scripts executable
 
 ```bash
-### make bash scripts executable ###
 chmod +x ~/.local/bin/wsi-segmentation-gpu
 chmod +x ~/.local/bin/wsi-segmentation-cpu
-###############################################
 ```
-and reload the `~/.profile` file.
+and reload the `~/.profile` file to add `~/.local/bin` to `$PATH`.
 ```bash
-### reload ~/.profile to add ~/.local/bin to $PATH ###
 source ~/.profile
 ```
 
