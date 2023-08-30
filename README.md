@@ -140,13 +140,13 @@ or only using the CPU to to perform segmentation by typing
 wsi-segmentation-cpu ## for cpu accelerated segmentation
 ```
 
-> You can pass additional singularity arguments if you want. For example to bind a results folder to a directoty `/data` to make it more easily accessible inside the notebook. In `WSL` the `C:` drive, `D:` drive, etc are mounted and located at `/mnt/c`, `/mnt/d`, etc, respectively. To mount your data folder to `/data` start the notebooks as follows:
+> You can pass additional singularity arguments if you want. For example to bind a results folder to a directory `/data` to make it more easily accessible inside the notebook. In `WSL` the `C:` drive, `D:` drive, etc are mounted and located at `/mnt/c`, `/mnt/d`, etc, respectively. To mount your data folder to `/data` start the notebooks as follows:
 >```bash 
 > wsi-segmentation-gpu --bind /path/to/result:/data
 >```
 >
 
-You should now see a link similar to `http://127.0.0.1:9999/lab?token=...`, copy it and open it in your preferred browser. Then, in the left sidebar navigate to the `notebooks` folder and open the `01_wsi_segmentation.ipnyb` notebook. Follow the instructions at the top of the nootebook to save and open a copy of the notebook. Once done, you can start the cell segmentation of your CellDIVE slides utilising the `deepcell` segmentation model and obtain a per-cell marker expression table.
+You should now see a link similar to `http://127.0.0.1:9999/lab?token=...`, copy it and open it in your preferred browser. Then, in the left sidebar navigate to the `notebooks` folder and open the `01_wsi_segmentation.ipnyb` notebook. Follow the instructions at the top of the notebook to save and open a copy of the notebook. Once done, you can start the cell segmentation of your CellDIVE slides utilising the `DeepCell` segmentation model and obtain a per-cell marker expression table.
 
 ## What to do next after the segmentation 
 By the end of the notebook you should have created file and folder structure, a segmentation mask and per-cell statistic which can be plugged into the `ark-analysis` toolbox ([Documentation](https://ark-analysis.readthedocs.io/en/latest/)/[GitHub](https://github.com/angelolab/ark-analysis)) starting from the [second notebook](https://github.com/angelolab/ark-analysis#2-pixel-clustering-with-pixie). Alternatively, you might also want to consider other whole slide image multiplex analysis pipelines such as [link](https://github.com/immunogenomics/FibroblastAtlas2022).
