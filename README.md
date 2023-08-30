@@ -111,6 +111,8 @@ Lastly, we make these two bash scripts executable
 
 ```bash
 chmod +x ~/.local/bin/wsi-segmentation-gpu
+```
+```bash
 chmod +x ~/.local/bin/wsi-segmentation-cpu
 ```
 and reload the `~/.profile` file to add `~/.local/bin` to `$PATH`.
