@@ -15,15 +15,21 @@ wsl --install -d Ubuntu
 
 It will ask you to create a user account and set a password. Make sure that you keep note of these as they are not linked to you Windows login. The next steps assumes you have set the user name to be `ubuntu`, so adjust the following command if you chose a different username.
 
-To enter the newly created WSL environment `Ubuntu` as the user `ubuntu` you set in the previous step run the following in the `PowerShell`:
+To enter the newly created `WSL` environment `Ubuntu` as the user `ubuntu` you set in the previous step run the following in the `PowerShell`:
 
 ```bash
 wsl -d Ubuntu -u ubuntu
 ```
 
-
-### WSL/Ubuntu or native Ubuntu - System preparation
+### System preparation and installing Singularity 
+#### WSL/Ubuntu or native Ubuntu
 The following instructions assume that you are either running Ubuntu 20.04/22.04 LTS on either WSL (see instructions above) or natively and you have access to the console (see previous step for WSL).
+
+If on Windows and you have not yet entered the previously created `WSL` environment, run the following to enter `Ubuntu` `WSL` environment as user `ubuntu`:
+
+```bash
+wsl -d Ubuntu -u ubuntu
+```
 
 First, we have to install the relevant `NVIDIA` tools to be able to utilise the GPU and `singularity` to deploy and run containers. Make sure you are executing the following commands in order.
 
@@ -71,6 +77,10 @@ and link the `nvidia-container-cli` tool with `Singularity` by setting the path 
 ```bash
 sudo sed -i "s#\# nvidia\-container\-cli path =.*#nvidia-container-cli path = $( which nvidia-container-cli )#" /etc/singularity/singularity.conf
 ```
+
+#### macOS
+`Singularity` can also be installed under MacOS making use of virtualisation using `Vagrant`. Please refer to the [Singularity Documentation](https://docs.sylabs.io/guides/3.0/user-guide/installation.html#mac) for detailed installation instructions. These installation instruction should provide you with a Linux environment, which you can use to build the whole slide image segmentation container in following the steps below. However, at this moment in time this method does not support GPU-accelerated segmentation which will make it very slow for large CellDive slides.
+
 
 ### Build whole slide image segmentation container
 
