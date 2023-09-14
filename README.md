@@ -78,10 +78,6 @@ and link the `nvidia-container-cli` tool with `Singularity` by setting the path 
 sudo sed -i "s#\# nvidia\-container\-cli path =.*#nvidia-container-cli path = $( which nvidia-container-cli )#" /etc/singularity/singularity.conf
 ```
 
-#### macOS
-`Singularity` can also be installed under MacOS making use of virtualisation using `Vagrant`. Please refer to the [Singularity Documentation](https://docs.sylabs.io/guides/3.0/user-guide/installation.html#mac) for detailed installation instructions. These installation instruction should provide you with a Linux environment, which you can use to build the whole slide image segmentation container in following the steps below. However, at this moment in time this method does not support GPU-accelerated segmentation which will make it very slow for large CellDive slides.
-
-
 ### Build whole slide image segmentation container
 
 We start by creating a `builds` folder in the HOME `~` directory and cloning/downloading this repository from GitHub: 
@@ -160,6 +156,10 @@ You should now see a link similar to `http://127.0.0.1:9999/lab?token=...`, copy
 
 ## What to do next after the segmentation 
 By the end of the notebook you should have created file and folder structure, a segmentation mask and per-cell statistic which can be plugged into the `ark-analysis` toolbox ([Documentation](https://ark-analysis.readthedocs.io/en/latest/)/[GitHub](https://github.com/angelolab/ark-analysis)) starting from the [second notebook](https://github.com/angelolab/ark-analysis#2-pixel-clustering-with-pixie). Alternatively, you might also want to consider other whole slide image multiplex analysis pipelines such as [link](https://github.com/immunogenomics/FibroblastAtlas2022).
+
+## macOS installation
+`Singularity` can also be installed under MacOS making use of virtualisation using `Vagrant`. However, we can not give anu guarantees and support for running this container and segmentation notebook under macOS. Thus, please refer to the official [Singularity Documentation](https://docs.sylabs.io/guides/3.0/user-guide/installation.html#mac) for detailed installation instructions of the container environment. These installation instruction should provide you with a Linux environment, which you can use to build the whole slide image segmentation container in following the steps below. However, at this moment in time this method does not support GPU-accelerated segmentation which will make it very slow for large Cell DIVE slides.
+
 
 ## References and Acknowledgments
 
