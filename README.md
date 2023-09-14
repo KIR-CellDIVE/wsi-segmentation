@@ -4,10 +4,10 @@ This work aims to facilitate and simplify the initial step of image analysis tha
 
 ## Installation
 
-### Windows specific steps
-If you are using Windows make sure you have `Windows Subsystem for Linux (WSL)` ([link](https://learn.microsoft.com/en-us/windows/wsl/install)) and the latest `NVIDIA CUDA` driver ([link](https://www.nvidia.co.uk/Download/index.aspx)) for your GPU (if you have one in your system) installed.
+### Windows
+If you are using Windows make sure you have `Windows Subsystem for Linux` [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) and the latest `NVIDIA CUDA` [driver](https://www.nvidia.co.uk/Download/index.aspx) for your GPU (if you have one in your system) installed.
 
-Following this official [guide](https://learn.microsoft.com/en-us/windows/wsl/install), install `WSL` and create a new `Ubuntu`-based `WSL` environment called `Ubuntu` by opening `PowerShell` and simply running:
+Following [this](https://learn.microsoft.com/en-us/windows/wsl/install) official guide, install `WSL` and create a new `Ubuntu`-based `WSL` environment called `Ubuntu` by opening `PowerShell` and simply running:
 
 ```bash
 wsl --install -d Ubuntu
