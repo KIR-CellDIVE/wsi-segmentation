@@ -34,7 +34,7 @@ From: tensorflow/tensorflow:2.8.0-gpu
     && rm MultiplexSegmentation-9.tar.gz
 
 %runscript
-    jupyter lab --ip=0.0.0.0 --no-browser --port=$LISTEN_PORT --notebook-dir="/opt/analysis"
+    jupyter lab --ip=0.0.0.0 --no-browser --port=$LISTEN_PORT --LabApp.default_url="/lab/workspaces/lab?reset" --notebook-dir="/opt/analysis"
 
 %labels
     Author jonas.mackerodt@kennedy.ox.ac.uk
