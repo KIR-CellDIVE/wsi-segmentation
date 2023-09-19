@@ -31,11 +31,11 @@ From: gcr.io/deeplearning-platform-release/tf2-gpu.2-8.py310
     python3 -m pip install /opt/wsi_segmentation
     
     # install deepcell model
-    # mkdir -p /.keras/models
-    # cd /.keras/models \
-    # && wget https://deepcell-data.s3-us-west-1.amazonaws.com/saved-models/MultiplexSegmentation-9.tar.gz \
-    # && tar -xvzf MultiplexSegmentation-9.tar.gz \
-    # && rm MultiplexSegmentation-9.tar.gz
+    mkdir -p /.keras/models
+    cd /.keras/models \
+    && wget https://deepcell-data.s3-us-west-1.amazonaws.com/saved-models/MultiplexSegmentation-9.tar.gz \
+    && tar -xvzf MultiplexSegmentation-9.tar.gz \
+    && rm MultiplexSegmentation-9.tar.gz
 
 %runscript
     jupyter lab --ip=0.0.0.0 --no-browser --port=$LISTEN_PORT --LabApp.default_url="/lab/workspaces/lab?reset" --notebook-dir="/opt/analysis"
