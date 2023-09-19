@@ -90,7 +90,7 @@ mkdir -p ~/builds \
 Next, we build a singularity container called `wsi_segmentation.sif` based on definition file `container.def`:
 
 ```bash
-cd wsi-segmentation \
+cd wsi-segmentation/singularity \
 && sudo singularity build wsi_segmentation.sif container.def
 ```
 
@@ -105,13 +105,13 @@ Then, we create two bash scripts in `~/.local/bin` to make starting the containe
 ```bash
 echo "#! /bin/bash
 ## run wsi-segmentation with GPU acceleration
-[ -d "/mnt" ] && singularity \"\$@\" run --bind /mnt:/opt/analysis/drives --bind /:/opt/analysis/host --nv --nvccli $HOME/builds/wsi-segmentation/wsi_segmentation.sif || singularity run \"\$@\" --bind /:/opt/analysis/host --nv --nvccli $HOME/builds/wsi-segmentation/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-gpu
+[ -d "/mnt" ] && singularity \"\$@\" run --bind /mnt:/opt/analysis/drives --bind /:/opt/analysis/host --nv --nvccli $HOME/builds/wsi-segmentation/wsi_segmentation.sif || singularity run \"\$@\" --bind /:/opt/analysis/host --nv --nvccli $HOME/builds/wsi-segmentation/singularity/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-gpu
 ```
 
 ```bash
 echo "#! /bin/bash
 ## run wsi-segmentation without GPU acceleration
-[ -d "/mnt" ] && singularity run \"\$@\" --bind /mnt:/opt/analysis/drives --bind /:/opt/analysis/host $HOME/builds/wsi-segmentation/wsi_segmentation.sif || singularity run \"\$@\" --bind /:/opt/analysis/host $HOME/builds/wsi-segmentation/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-cpu
+[ -d "/mnt" ] && singularity run \"\$@\" --bind /mnt:/opt/analysis/drives --bind /:/opt/analysis/host $HOME/builds/wsi-segmentation/wsi_segmentation.sif || singularity run \"\$@\" --bind /:/opt/analysis/host $HOME/builds/wsi-segmentation/singularity/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-cpu
 ```
 Lastly, we make these two bash scripts executable
 
@@ -155,7 +155,7 @@ wsi-segmentation-cpu ## for cpu accelerated segmentation
 You should now see a link similar to `http://127.0.0.1:9999/lab/workspaces/lab?reset?token=...`, copy it and open it in your preferred browser. Then, in the left sidebar navigate to the `notebooks` folder and open the `01_wsi_segmentation.ipnyb` notebook. Follow the instructions at the top of the notebook to save and open a copy of the notebook. Once done, you can start the cell segmentation of your Cell DIVE images utilising the `DeepCell` segmentation model and obtain a per-cell marker expression table.
 
 ## What to do next after the segmentation 
-By the end of the notebook you should have created file and folder structure, a segmentation mask and per-cell statistic which can be plugged into the `ark-analysis` toolbox ([Documentation](https://ark-analysis.readthedocs.io/en/latest/)/[GitHub](https://github.com/angelolab/ark-analysis)) starting from the [second notebook](https://github.com/angelolab/ark-analysis#2-pixel-clustering-with-pixie). Alternatively, you might also want to consider other whole slide image multiplex analysis pipelines such as [link](https://github.com/immunogenomics/FibroblastAtlas2022).
+By the end of the notebook you should have created file and folder structure, a segmentation mask and per-cell statistic which can be plugged into the `ark-analysis` toolbox ([Documentation](https://ark-analysis.readthedocs.io/en/latest/)/[GitHub](https://github.com/angelolab/ark-analysis)) starting from the [second notebook](https://github.com/angelolab/ark-analysis#2-pixel-clustering-with-pixie). We also provide `Singularity` container similar to the one found in this repository to run the `ark-analysis` toolbox. Alternatively, you might also want to consider other whole slide image multiplex analysis pipelines such as [link](https://github.com/immunogenomics/FibroblastAtlas2022) or [SpOOx](https://github.com/Taylor-CCB-Group/SpOOx/).
 
 ## macOS installation
 `Singularity` can also be installed under MacOS making use of virtualisation using `Vagrant`. However, we can not give anu guarantees and support for running this container and segmentation notebook under macOS. Thus, please refer to the official [Singularity Documentation](https://docs.sylabs.io/guides/3.0/user-guide/installation.html#mac) for detailed installation instructions of the container environment. These installation instruction should provide you with a Linux environment, which you can use to build the whole slide image segmentation container in following the steps below. However, at this moment in time this method does not support GPU-accelerated segmentation which will make it very slow for large Cell DIVE slides.
