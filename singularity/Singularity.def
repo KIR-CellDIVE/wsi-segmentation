@@ -6,7 +6,7 @@ From: gcr.io/deeplearning-platform-release/tf2-gpu.2-8.py310
     ../notebooks /opt/analysis/notebooks
     ../pyproject.toml /opt/wsi_segmentation/pyproject.toml
     ../README.md /opt/wsi_segmentation/README.md
-    ../requirements.txt requirements.txt
+    requirements.txt requirements.txt
     ipython_kernel_config.py /etc/ipython/ipython_kernel_config.py
 
 %environment
@@ -38,7 +38,7 @@ From: gcr.io/deeplearning-platform-release/tf2-gpu.2-8.py310
     && rm MultiplexSegmentation-9.tar.gz
 
 %runscript
-    jupyter lab --ip=0.0.0.0 --no-browser --port=$LISTEN_PORT --LabApp.default_url="/lab/workspaces/lab?reset" --notebook-dir="/opt/analysis"
+    jupyter lab --ip=0.0.0.0 --no-browser --port=$LISTEN_PORT --LabApp.default_url="/lab/workspaces/template?reset" --notebook-dir="/opt/analysis"
 
 %labels
     Author jonas.mackerodt@kennedy.ox.ac.uk
