@@ -160,7 +160,7 @@ def tiled_segmentation_overlap(img, start_row, start_col, stop_row, stop_col, st
             
             # if np.max(img[:,:,:,:]) < background_threshold:
             #     tmp_segmentation = np.zeros_like(mask_array, dtype=int)[:, r0:r1, c0:c1,:] ##  remove this step????
-            if np.max(img[:, r0:r1, c0:c1,:]) >= background_threshold:
+            if (np.max(img[:, r0:r1, c0:c1,:]) >= background_threshold) and (np.unique(img[:, r0:r1, c0:c1,0]).shape[0] > 1) and (np.unique(img[:, r0:r1, c0:c1,1]).shape[0] > 1) :
                 tmp_segmentation = app.predict(img[:, r0:r1, c0:c1,:], compartment=compartment, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
 
                 for j in range(tmp_segmentation.shape[3]):
