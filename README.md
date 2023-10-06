@@ -36,7 +36,7 @@ First, we have to install the relevant `NVIDIA` tools to be able to utilise the 
 We start by setting the version of `SingularityCE` we will be installing and determining the name and version of our Ubuntu distribution:
 
 ```bash
-SINGULARITY_VER="3.11.4"
+SINGULARITY_VER="4.0.0"
 UBUNTU_CODENAME=$( lsb_release -cs )
 UBUNTU_VERSION=$( lsb_release -rs )
 ```
@@ -77,6 +77,20 @@ and link the `nvidia-container-cli` tool with `Singularity` by setting the path 
 ```bash
 sudo sed -i "s#\# nvidia\-container\-cli path =.*#nvidia-container-cli path = $( which nvidia-container-cli )#" /etc/singularity/singularity.conf
 ```
+
+#### Verify Singularity installation and GPU access
+To verify that your `WSL` Ubuntu installation has access to your NVIDIA GPUs run:
+```bash
+nvidia-smi
+```
+If setup correctly, this should display information about the system's GPUs on the screen.
+
+To verify that both `nvidia-container-cli` tools and `Singularity` were properly installed, setup and that container have access to the GPUS run:
+```bash
+singularity run --nv --nvccli docker://nvidia/cuda:11.8.0-base-ubuntu22.04 nvidia-smi
+```
+This starts a container with access to all GPUs installed in your systems and prints information about them to the screen. If you can see info about you GPUs being displayed then you have correctly setup up `Singularity`.
+
 
 ### Build whole slide image segmentation container
 
