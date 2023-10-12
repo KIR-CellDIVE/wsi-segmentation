@@ -1,6 +1,6 @@
 # Whole slide image segmentation of Cell DIVE multiplex microscopy images
 
-This work aims to facilitate and simplify the initial step of image analysis that is whole slide image segmentation for researchers using the Cell DIVE multiplex imaging platform. This segmentation pipeline uses the well-established `DeepCell` library and `Mesmer` model. This segmentation pipeline is also part of a STAR protocol publication (doi:?????).
+This work aims to facilitate and simplify whole-slide segmentation as the first step of image analysis for researchers using the Cell DIVE multiplex imaging platform. This segmentation pipeline uses the well-established `DeepCell` library and `Mesmer` model. This segmentation pipeline is also part of a STAR protocol publication (doi: TO BE ADDED).
 
 ## Installation
 
@@ -92,7 +92,7 @@ singularity run --nv --nvccli docker://nvidia/cuda:11.8.0-base-ubuntu22.04 nvidi
 This starts a container with access to all GPUs installed in your systems and prints information about them to the screen. If you can see info about you GPUs being displayed then you have correctly setup up `Singularity`.
 
 
-### Build whole slide image segmentation container
+### Build whole-slide image segmentation container
 
 We start by creating a `builds` folder in the HOME `~` directory and cloning/downloading this repository from GitHub: 
 
@@ -108,7 +108,7 @@ cd wsi-segmentation/singularity \
 && sudo singularity build wsi_segmentation.sif Singularity
 ```
 
-In order to make it easier to run the container in the future we create to bash scripts `wsi-segmentation-gpu` and `wsi-segmentation-cpu` in `~/.local/bin` that can simply be called from anywhere inside the console. Adapt these commands if you decided to download and build the container in a different directory. (Skip this step if you'd rather start the containers directly yourself). 
+In order to make it easier to run the container in the future we create two bash scripts `wsi-segmentation-gpu` and `wsi-segmentation-cpu` in `~/.local/bin` that can simply be called from anywhere inside the console. Adapt these commands if you decide to download and build the container in a different directory. (Skip this step if you'd rather start the containers directly yourself). 
 
 We make sure that `~/.local/bin` exists.
 ```bash
@@ -142,9 +142,9 @@ source ~/.profile
 
 
 
-## Run whole slide image segmentation
+## Run whole-slide image segmentation
 
-If you have followed the installation step you should be able to run the whole slide image segmentation Jupyter Notebook server now. If you are on `Windows` and you use `WSL`, first open `PowerShell` and enter the previously created WSL environment `Ubuntu` as the user `ubuntu` if you haven't already done so:
+If you have followed the installation step you should be able to run the whole-slide image segmentation Jupyter Notebook server now. If you are on `Windows` and you use `WSL`, first open `PowerShell` and enter the previously created WSL environment `Ubuntu` as the user `ubuntu` if you haven't already done so:
 
 ```bash
 wsl -d Ubuntu -u ubuntu
@@ -169,10 +169,10 @@ wsi-segmentation-cpu ## for cpu accelerated segmentation
 You should now see a link similar to `http://127.0.0.1:9999/lab/workspaces/lab?reset?token=...`, copy it and open it in your preferred browser. Then, in the left sidebar navigate to the `notebooks` folder and open the `1_WSI_Deepcell_Segmentation.ipnyb` notebook. Follow the instructions at the top of the notebook to save and open a copy of the notebook. Once done, you can start the cell segmentation of your Cell DIVE images utilising the `DeepCell` segmentation model and obtain a per-cell marker expression table.
 
 ## What to do next after the segmentation 
-By the end of the notebook you should have created file and folder structure, a segmentation mask and per-cell statistic which can be plugged into the `ark-analysis` toolbox ([Documentation](https://ark-analysis.readthedocs.io/en/latest/)/[GitHub](https://github.com/angelolab/ark-analysis)) starting from the [2 - "Pixel clustering with pixie" notebook](https://github.com/angelolab/ark-analysis#2-pixel-clustering-with-pixie). We also provide `Singularity` container similar to the one found in this repository to run the `ark-analysis` toolbox. Alternatively, you might also want to consider other whole slide image multiplex analysis pipelines such as [link](https://github.com/immunogenomics/FibroblastAtlas2022) or [SpOOx](https://github.com/Taylor-CCB-Group/SpOOx/).
+By the end of the notebook you should have created file and folder structure, a segmentation mask and per-cell statistic which can be plugged into the `ark-analysis` toolbox ([Documentation](https://ark-analysis.readthedocs.io/en/latest/)/[GitHub](https://github.com/angelolab/ark-analysis)) starting from the [2 - "Pixel clustering with pixie" notebook](https://github.com/angelolab/ark-analysis#2-pixel-clustering-with-pixie). We also provide `Singularity` container similar to the one found in this repository to run the `ark-analysis` toolbox. Alternatively, you might also want to consider other whole-slide multiplex image analysis pipelines such as [link](https://github.com/immunogenomics/FibroblastAtlas2022) or [SpOOx](https://github.com/Taylor-CCB-Group/SpOOx/).
 
 ## macOS installation
-`Singularity` can also be installed under MacOS making use of virtualisation using `Vagrant`. However, we can not give anu guarantees and support for running this container and segmentation notebook under macOS. Thus, please refer to the official [Singularity Documentation](https://docs.sylabs.io/guides/3.0/user-guide/installation.html#mac) for detailed installation instructions of the container environment. These installation instruction should provide you with a Linux environment, which you can use to build the whole slide image segmentation container in following the steps below. However, at this moment in time this method does not support GPU-accelerated segmentation which will make it very slow for large Cell DIVE slides.
+`Singularity` can also be installed under MacOS making use of virtualisation using `Vagrant`. However, we can not give any guarantees and support for running this container and segmentation notebook under macOS. Thus, please refer to the official [Singularity Documentation](https://docs.sylabs.io/guides/3.0/user-guide/installation.html#mac) for detailed installation instructions of the container environment. These installation instruction should provide you with a Linux environment, which you can use to build the whole-slide image segmentation container. However, at this moment in time this method does not support GPU-accelerated segmentation which will make it very slow for large Cell DIVE slides.
 
 
 ## References and Acknowledgments
