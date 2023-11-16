@@ -172,7 +172,9 @@ You should now see a link similar to `http://127.0.0.1:9999/lab/workspaces/lab?r
 By the end of the notebook you should have created a file and folder structure, a segmentation mask and per-cell statistic which can be plugged into the `ark-analysis` toolbox ([Documentation](https://ark-analysis.readthedocs.io/en/latest/)/[GitHub](https://github.com/angelolab/ark-analysis)) starting from the [2 - "Pixel clustering with pixie" notebook](https://github.com/angelolab/ark-analysis#2-pixel-clustering-with-pixie). We also provide a `Singularity` container similar to the one found in this repository to run the `ark-analysis` toolbox. Alternatively, you might also want to consider other downstream analysis pipelines such as [Fibroblast Atlas 2022](https://github.com/immunogenomics/FibroblastAtlas2022) or [SpOOx](https://github.com/Taylor-CCB-Group/SpOOx/).
 
 ## macOS installation
+
 `Singularity` can also be installed under MacOS making use of virtualisation using `Vagrant`. However, we can not give any guarantees of support for running this container and segmentation notebook under macOS. Thus, please refer to the official [Singularity Documentation](https://docs.sylabs.io/guides/3.0/user-guide/installation.html#mac) for detailed installation instructions of the container environment. These installation instruction should provide you with a Linux environment, which you can use to build the whole-slide image segmentation container by following the steps above. However, at this moment in time this method does not support GPU-accelerated segmentation which will make it very slow for large Cell DIVE images.
+
 
 
 ## References and Acknowledgments
