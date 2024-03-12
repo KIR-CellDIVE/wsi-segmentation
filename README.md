@@ -21,7 +21,7 @@ To enter the newly created `WSL` environment `Ubuntu` as the user `ubuntu` you s
 wsl -d Ubuntu -u ubuntu
 ```
 
-### System preparation and installing Singularity 
+### System preparation and installing Apptainer 
 #### WSL/Ubuntu or native Ubuntu
 The following instructions assume that you are either running Ubuntu 20.04/22.04 LTS on either WSL (see instructions above) or natively and you have access to the console (see previous step for WSL).
 
@@ -31,65 +31,58 @@ If on Windows and you have not yet entered the previously created `WSL` environm
 wsl -d Ubuntu -u ubuntu
 ```
 
-First, we have to install the relevant `NVIDIA` tools to be able to utilise the GPU and `singularity` to deploy and run containers. Make sure you are executing the following commands in order.
+First, we have to install the relevant `NVIDIA` tools to be able to utilise the GPU and `Apptainer` to deploy and run containers. Make sure you are executing the following commands in order.
 
-We start by setting the version of `SingularityCE` we will be installing and determining the name and version of our Ubuntu distribution:
-
-```bash
-SINGULARITY_VER="4.0.0"
-UBUNTU_CODENAME=$( lsb_release -cs )
-UBUNTU_VERSION=$( lsb_release -rs )
-```
-
-Next, we install the `libnvidia-container-tools`. As part of this, we have to add and sign a new repository provided by `NVIDIA`. To do so, we first fetch and add the signing key:
+First, we install the `nvidia-container-toolkit`. As part of this, we have to add and sign a new repository provided by `NVIDIA`. To do so, we first fetch and add the signing key:
 
 ```bash
-curl -s -L https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/libnvidia-container.gpg
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
 ```
-Then, fetch the repository file
+Then, fetch the repository file and assign the new signing key to repository
 ```bash
-curl -s -L https://nvidia.github.io/libnvidia-container/ubuntu${UBUNTU_VERSION}/libnvidia-container.list | sudo tee /etc/apt/sources.list.d/libnvidia-container.list
+curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+  sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+  sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list \
 ```
-and assign the new signing key to repository:
-```bash
-sudo sed -i 's#deb http#deb [signed\-by=/etc/apt/trusted\.gpg\.d/libnvidia-container\.gpg] http#' /etc/apt/sources.list.d/libnvidia-container.list
-```
+
 Now, we update the metadata from the new repositories
 ```bash
 sudo apt update
 ```
-and install libnvidia-container-tools:
+and install nvidia-container-toolkit:
 ```bash
-sudo apt install libnvidia-container-tools
+sudo apt-get install -y nvidia-container-toolkit
 ```
 
-Next, we download `SingularityCE`,
+Next, we are going to install `Apptainer`. To do so we first install the *software-properties-common* package in order to be able to add PPA (Personal Package Archive) to the repositories:
+
 ```bash
-mkdir -p ~/Downloads \
-&& cd ~/Downloads \
-&& wget https://github.com/sylabs/singularity/releases/download/v${SINGULARITY_VER}/singularity-ce_${SINGULARITY_VER}-${UBUNTU_CODENAME}_amd64.deb
+sudo apt update
+sudo apt install -y software-properties-common
 ```
-install it
+Then, we add the Apptainer PPA:
 ```bash
-sudo apt install ./singularity-ce_${SINGULARITY_VER}-${UBUNTU_CODENAME}_amd64.deb
-```
-and link the `nvidia-container-cli` tool with `Singularity` by setting the path for nvidia-container-cli in singularity.conf
-```bash
-sudo sed -i "s#\# nvidia\-container\-cli path =.*#nvidia-container-cli path = $( which nvidia-container-cli )#" /etc/singularity/singularity.conf
+sudo add-apt-repository -y ppa:apptainer/ppa
+sudo apt update
 ```
 
-#### Verify Singularity installation and GPU access
+Finally, we install `Apptainer`:
+```bash
+sudo apt install -y apptainer
+```
+
+#### Verify Apptainer installation and GPU access
 To verify that your `WSL` Ubuntu installation has access to your NVIDIA GPUs run:
 ```bash
 nvidia-smi
 ```
 If setup correctly, this should display information about the system's GPUs on the screen.
 
-To verify that both `nvidia-container-cli` tools and `Singularity` were properly installed, setup and that container have access to the GPUS run:
+To verify that both `nvidia-container-cli` tools and `Apptainer` were properly installed, setup and that container have access to the GPUS run:
 ```bash
-singularity run --nv --nvccli docker://nvidia/cuda:11.8.0-base-ubuntu22.04 nvidia-smi
+apptainer run --nv --nvccli docker://nvidia/cuda:11.8.0-base-ubuntu22.04 nvidia-smi
 ```
-This starts a container with access to all GPUs installed in your systems and prints information about them to the screen. If you can see info about your GPUs being displayed then you have correctly setup up `Singularity`.
+This starts a container with access to all GPUs installed in your systems and prints information about them to the screen. If you can see info about your GPUs being displayed then you have correctly setup up `Apptainer`.
 
 
 ### Build whole-slide image segmentation container
@@ -101,11 +94,11 @@ mkdir -p ~/builds \
 && cd ~/builds \
 && git clone https://github.com/KIR-CellDIVE/wsi-segmentation.git
 ```
-Next, we build a singularity container called `wsi_segmentation.sif` based on definition file `container.def`:
+Next, we build a Apptainer container called `wsi_segmentation.sif` based on definition file `Apptainer.def`:
 
 ```bash
-cd wsi-segmentation/singularity \
-&& sudo singularity build wsi_segmentation.sif Singularity
+cd wsi-segmentation/apptainer \
+&& sudo apptainer build wsi_segmentation.sif Apptainer
 ```
 
 In order to make it easier to run the container in the future we create two bash scripts `wsi-segmentation-gpu` and `wsi-segmentation-cpu` in `~/.local/bin` that can simply be called from anywhere inside the console. Adapt these commands if you decide to download and build the container in a different directory. (Skip this step if you'd rather start the containers directly yourself). 
@@ -119,13 +112,13 @@ Then, we create two bash scripts in `~/.local/bin` to make starting the containe
 ```bash
 echo "#! /bin/bash
 ## run wsi-segmentation with GPU acceleration
-[ -d "/mnt" ] && singularity \"\$@\" run --bind /mnt:/opt/analysis/drives --bind /:/opt/analysis/host --nv --nvccli $HOME/builds/wsi-segmentation/singularity/wsi_segmentation.sif || singularity run \"\$@\" --bind /:/opt/analysis/host --nv --nvccli $HOME/builds/wsi-segmentation/singularity/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-gpu
+[ -d "/mnt" ] && apptainer \"\$@\" run --writable-tmpfs --bind /mnt:/opt/analysis/drives --bind /:/opt/analysis/host --nv --nvccli $HOME/builds/wsi-segmentation/apptainer/wsi_segmentation.sif || apptainer run --writable-tmpfs \"\$@\" --bind /:/opt/analysis/host --nv --nvccli $HOME/builds/wsi-segmentation/apptainer/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-gpu
 ```
 
 ```bash
 echo "#! /bin/bash
 ## run wsi-segmentation without GPU acceleration
-[ -d "/mnt" ] && singularity run \"\$@\" --bind /mnt:/opt/analysis/drives --bind /:/opt/analysis/host $HOME/builds/wsi-segmentation/singularity/wsi_segmentation.sif || singularity run \"\$@\" --bind /:/opt/analysis/host $HOME/builds/wsi-segmentation/singularity/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-cpu
+[ -d "/mnt" ] && apptainer run --writable-tmpfs \"\$@\" --bind /mnt:/opt/analysis/drives --bind /:/opt/analysis/host $HOME/builds/wsi-segmentation/apptainer/wsi_segmentation.sif || apptainer run --writable-tmpfs \"\$@\" --bind /:/opt/analysis/host $HOME/builds/wsi-segmentation/apptainer/wsi_segmentation.sif" > ~/.local/bin/wsi-segmentation-cpu
 ```
 Lastly, we make these two bash scripts executable
 
@@ -160,7 +153,7 @@ or only using the CPU to perform segmentation by typing
 wsi-segmentation-cpu ## for cpu accelerated segmentation
 ```
 
-> You can pass additional singularity arguments if you want. For example, to bind a results folder to a directory `/data` to make it more easily accessible inside the notebook. In `WSL` the `C:` drive, `D:` drive, etc are mounted and located at `/mnt/c`, `/mnt/d`, etc, respectively. To mount your data folder to `/data` start the notebooks as follows:
+> You can pass additional Apptainer arguments if you want. For example, to bind a results folder to a directory `/data` to make it more easily accessible inside the notebook. In `WSL` the `C:` drive, `D:` drive, etc are mounted and located at `/mnt/c`, `/mnt/d`, etc, respectively. To mount your data folder to `/data` start the notebooks as follows:
 >```bash 
 > wsi-segmentation-gpu --bind /path/to/result:/data
 >```
@@ -169,11 +162,11 @@ wsi-segmentation-cpu ## for cpu accelerated segmentation
 You should now see a link similar to `http://127.0.0.1:9999/lab/workspaces/lab?reset?token=...`, copy it and open it in your preferred browser. Then, in the left sidebar navigate to the `notebooks` folder and open the `1_WSI_Deepcell_Segmentation.ipnyb` notebook. Follow the instructions at the top of the notebook to save and open a copy of the notebook. Once done, you can start the cell segmentation of your Cell DIVE images utilising the `DeepCell` segmentation model and obtain a per-cell marker expression table.
 
 ## What to do next after the segmentation 
-By the end of the notebook you should have created a file and folder structure, a segmentation mask and per-cell statistic which can be plugged into the `ark-analysis` toolbox ([Documentation](https://ark-analysis.readthedocs.io/en/latest/)/[GitHub](https://github.com/angelolab/ark-analysis)) starting from the [2 - "Pixel clustering with pixie" notebook](https://github.com/angelolab/ark-analysis#2-pixel-clustering-with-pixie). We also provide a `Singularity` container similar to the one found in this repository to run the `ark-analysis` toolbox. Alternatively, you might also want to consider other downstream analysis pipelines such as [Fibroblast Atlas 2022](https://github.com/immunogenomics/FibroblastAtlas2022) or [SpOOx](https://github.com/Taylor-CCB-Group/SpOOx/).
+By the end of the notebook you should have created a file and folder structure, a segmentation mask and per-cell statistic which can be plugged into the `ark-analysis` toolbox ([Documentation](https://ark-analysis.readthedocs.io/en/latest/)/[GitHub](https://github.com/angelolab/ark-analysis)) starting from the [2 - "Pixel clustering with pixie" notebook](https://github.com/angelolab/ark-analysis#2-pixel-clustering-with-pixie). We also provide a `Apptainer` container similar to the one found in this repository to run the `ark-analysis` toolbox. Alternatively, you might also want to consider other downstream analysis pipelines such as [Fibroblast Atlas 2022](https://github.com/immunogenomics/FibroblastAtlas2022) or [SpOOx](https://github.com/Taylor-CCB-Group/SpOOx/).
 
 ## macOS installation
 
-`Singularity` can also be installed under MacOS making use of virtualisation using `Vagrant`. However, we can not give any guarantees of support for running this container and segmentation notebook under macOS. Thus, please refer to the official [Singularity Documentation](https://docs.sylabs.io/guides/3.0/user-guide/installation.html#mac) for detailed installation instructions of the container environment. These installation instruction should provide you with a Linux environment, which you can use to build the whole-slide image segmentation container by following the steps above. However, at this moment in time this method does not support GPU-accelerated segmentation which will make it very slow for large Cell DIVE images.
+`Apptainer` can also be installed under MacOS making use of virtualisation using `Vagrant`. However, we can not give any guarantees of support for running this container and segmentation notebook under macOS. Thus, please refer to the official [Apptainer Documentation](https://apptainer.org/docs/admin/main/installation.html#mac) for detailed installation instructions of the container environment. These installation instruction should provide you with a Linux environment, which you can use to build the whole-slide image segmentation container by following the steps above. However, at this moment in time this method does not support GPU-accelerated segmentation which will make it very slow for large Cell DIVE images.
 
 
 
