@@ -1,0 +1,41 @@
+BootStrap: docker
+From: mambaorg/micromamba:1.5.7-focal-cuda-11.2.2
+
+%files
+    ../src /opt/wsi_segmentation/src
+    ../notebooks /opt/analysis/notebooks
+    ../pyproject.toml /opt/wsi_segmentation/pyproject.toml
+    ../README.md /opt/wsi_segmentation/README.md
+    micromamba_env.yml micromamba_env.yml
+
+%environment
+    export LISTEN_PORT=9999
+    export LANG=C.UTF-8
+
+%post
+    # set to reduce terminal print clutter and pip root warning
+    CI=1
+    PIP_ROOT_USER_ACTION=ignore
+
+    # create Python 3.10 environment named py310 and install packages
+    micromamba create -f micromamba_env.yml
+
+    # install wsi_segmentation module
+    micromamba run -n py310 python3 -m pip install /opt/wsi_segmentation
+    
+    # install deepcell model
+    # mkdir -p /.keras/models
+    # cd /.keras/models \
+    # && /opt/conda/envs/py310/bin/wget https://deepcell-data.s3-us-west-1.amazonaws.com/saved-models/MultiplexSegmentation-9.tar.gz \
+    # && tar -xvzf MultiplexSegmentation-9.tar.gz \
+    # && rm MultiplexSegmentation-9.tar.gz
+
+%runscript
+    micromamba run -n py310 jupyter lab --ip=0.0.0.0 --no-browser --port=$LISTEN_PORT --LabApp.default_url="/lab/workspaces/template?reset" --notebook-dir="/opt/analysis"
+
+%labels
+    Author jonas.mackerodt@kennedy.ox.ac.uk
+    Version v0.0.1
+
+%help
+    Run this container to perfornm whole slide image segmentation using deepcell
