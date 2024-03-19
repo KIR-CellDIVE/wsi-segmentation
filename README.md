@@ -10,15 +10,38 @@ If you are using Windows make sure you have `Windows Subsystem for Linux` [WSL](
 Following [this](https://learn.microsoft.com/en-us/windows/wsl/install) official guide, install `WSL` and create a new `Ubuntu`-based `WSL` environment called `Ubuntu` by opening `PowerShell` and simply running:
 
 ```bash
-wsl --install -d Ubuntu
+wsl --install -d Ubuntu-22.04
 ```
 
 It will ask you to create a user account and set a password. Make sure that you keep note of these as they are not linked to your Windows login. The next step assumes you have set the user name to be `ubuntu`, so adjust the following command if you chose a different username.
 
+Now, let's rename the WSL container to something more specific and so we make sure that this WSL container is used only for this specific purpose:
+
+```bash
+wsl --shutdown
+wsl --export Ubuntu-22.04 ubuntu-2204.tar
+wsl --import Ubuntu_DIVEMAP .\Ubuntu_DIVEMAP ubuntu-2204.tar
+```
+
+Lastly, we want to make the `ubuntu` user the default user. This is so you do not log in as the `root` user by default. We achieve as follows:
+
+```bash
+wsl -d Ubuntu_DIVEMAP -u root -e sh -c @"
+echo "[user]
+default=ubuntu" >> /etc/wsl.conf
+"@
+```
+
+(Optional) You can now delete the original `Ubuntu-22.04` WSL container by typping:
+```bash
+wsl --unregister Ubuntu-22.04
+rm ubuntu-2204.tar
+```
+
 To enter the newly created `WSL` environment `Ubuntu` as the user `ubuntu` you set in the previous step run the following in the `PowerShell`:
 
 ```bash
-wsl -d Ubuntu -u ubuntu
+wsl -d Ubuntu_DIVEMAP -u ubuntu
 ```
 
 ### System preparation and installing Apptainer 
@@ -42,7 +65,7 @@ Then, fetch the repository file and assign the new signing key to repository
 ```bash
 curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
   sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
-  sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list \
+  sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 ```
 
 Now, we update the metadata from the new repositories
