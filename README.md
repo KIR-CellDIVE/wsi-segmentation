@@ -32,7 +32,7 @@ default=ubuntu" >> /etc/wsl.conf
 "@
 ```
 
-(Optional) You can now delete the original `Ubuntu-22.04` WSL container by typping:
+(Optional) You can now delete the original `Ubuntu-22.04` WSL container by typing:
 ```bash
 wsl --unregister Ubuntu-22.04
 rm ubuntu-2204.tar
@@ -42,6 +42,16 @@ To enter the newly created `WSL` environment `Ubuntu` as the user `ubuntu` you s
 
 ```bash
 wsl -d Ubuntu_DIVEMAP -u ubuntu
+```
+
+Finally, to make the non-privileged `ubuntu` user the default user run the following command all at once in the `PowerShell`:  
+```bash
+wsl -d Ubuntu_DIVEMAP -u root -e sh -c @"
+cat >> /etc/wsl.conf<< EOF
+[user]
+default=ubuntu
+EOF
+"@
 ```
 
 ### System preparation and installing Apptainer 
