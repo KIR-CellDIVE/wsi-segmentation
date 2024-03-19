@@ -11,7 +11,8 @@ From: mambaorg/micromamba:1.5.7-focal-cuda-11.2.2
 %environment
     export LISTEN_PORT=9999
     export LANG=C.UTF-8
-
+    export LD_LIBRARY_PATH=/opt/conda/envs/py310/lib:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+    
 %post
     # set to reduce terminal print clutter and pip root warning
     CI=1
