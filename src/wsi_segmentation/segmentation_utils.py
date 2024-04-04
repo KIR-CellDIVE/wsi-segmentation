@@ -77,7 +77,67 @@ def combined_constraints(img_col_dim, img_row_dim, n, overlap, max_tile_area=pow
     else:
         return(None) 
 
+
+def dtn(t, o, m):
+    return t + (m-1) * (t - o)
+
+def dtotal(d, o, n):
+    return (d-o*(1-n))//(n)
+
+def result_assign(ldim, n, ldimt, sdimt, overlap):
+    if ldim == "row":
+        res = {'col_tile_size' : sdimt, 'row_tile_size' : ldimt, 'n_tiles' : n, 'overlap' : overlap}
+    elif ldim == "col":
+        res = {'col_tile_size' : ldimt, 'row_tile_size' : sdimt, 'n_tiles' : n, 'overlap' : overlap}
+    return res
+
+def tile_sizer_equal(col, row, o):
+    if col >= row:
+        larger_dim = "row"
+        d1 = col
+        d2 = row
+    else:
+        larger_dim = "col"
+        d1 = row
+        d2 = col
     
+        
+    n = 2
+    m = 1
+    d1t =  dtotal(d1, o, n)  #(d1+(n*o))//(1+n)
+    d2t = d1t
+    d2tm = dtn(d2t, o, m)
+    d2tm1 = dtn(d2t, o, m+1)
+    
+    if (d2tm - o) >= d2:
+        results =  result_assign(larger_dim, n, d1t, d2t, o)
+    else:
+        while not ((d2tm + o) < d2 < (d2tm1 - o)):
+            if m == n:
+                n += 1
+                m = 1
+
+            m += 1
+
+
+            d1t = dtotal(d1, o, n)
+            d2t = d1t
+            d2tm = dtn(d2t, o, m)
+            d2tm1 = dtn(d2t, o, m+1)
+        
+        results =  result_assign(larger_dim, n, d1t, d2t, o)
+        
+    return results
+
+def pad_to_square(arr):
+    m = np.max(arr.shape)
+    x,y = arr.shape
+    out = np.zeros((m,m), dtype=arr.dtype)
+    mx,my = (m-x)//2, (n-y)//2
+    out[0:x, 0:y] = arr
+    return out
+
+
 
 def tile_sizer(img_col_dim, img_row_dim, overlap, max_tile_area = pow(10000,2), min_tile_area = pow(500,2), n_tiles = range(2,11)):
     res = None
@@ -85,10 +145,7 @@ def tile_sizer(img_col_dim, img_row_dim, overlap, max_tile_area = pow(10000,2), 
     if _max_tile_size(img_col_dim,img_row_dim, ref=max_tile_area) and _xy_ratio(img_col_dim, img_row_dim):
         res = {'col_tile_size' : img_col_dim, 'row_tile_size' : img_row_dim, 'n_tiles' : 1, 'overlap' : 0}
     else:
-        for n in n_tiles:
-            res = combined_constraints(img_col_dim, img_row_dim, n, overlap, max_tile_area=max_tile_area, min_tile_area=min_tile_area)
-            if res != None:
-                break
+        res = tile_sizer_equal(img_col_dim, img_row_dim, overlap)
     
     if res == None:
          raise ValueError(f"No appropriate tile size for image of size {img_col_dim} x {img_row_dim} and overlap {overlap} could be automatically determined. Consider defining your own tile sizes via `tile_size_row` and `tile_size_col` arguments.")
@@ -240,9 +297,20 @@ def predict_tiled(img, tile_size_row=None, tile_size_col=None, dummy_var=-99, ov
 
         start_row, start_col, stop_row, stop_col = 0, 0, fov.shape[1], fov.shape[2]
         
-        _mask = tiled_segmentation_overlap(fov, start_row, start_col, stop_row, stop_col, step_size_row, step_size_col, dummy_var,overlap = overlap_tiles, cutoff = cutoff, background_threshold = background_threshold, compartment = compartment, app=app, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
-        _mask[np.isin(_mask, [-99])] = 0
-        
+        print(fov.shape)
+
+        padded_fov = pad_to_square(fov)
+        print(padded_fov.shape)
+
+        _mask_padded = tiled_segmentation_overlap(padded_fov, start_row, start_col, stop_row, stop_col, step_size_row, step_size_col, dummy_var,overlap = overlap_tiles, cutoff = cutoff, background_threshold = background_threshold, compartment = compartment, app=app, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
+        print(_mask_padded.shape)
+
+        _mask_padded[np.isin(_mask_padded, [-99])] = 0
+        _mask = _mask_padded[0:fov.shape[1], 0:fov.shape[2], ...]
+        print(_mask.shape)
+
+
+
         ## remove small cells
         if (cell_size_threshold != None) and (compartment == 'whole-cell'):
             pixel_count_per_id = np.unique(_mask, return_counts =True)
