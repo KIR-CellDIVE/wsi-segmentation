@@ -1,6 +1,6 @@
-# Whole slide image segmentation of Cell DIVE multiplex microscopy images
+# Whole-slide image segmentation of Cell DIVE multiplex microscopy images
 
-This work aims to facilitate and simplify whole-slide segmentation as the first step of image analysis for researchers using the Cell DIVE multiplex imaging platform. This segmentation pipeline uses the well-established `DeepCell` library and `Mesmer` model. This segmentation pipeline is also part of a STAR protocol publication (doi: TO BE ADDED).
+This work aims to facilitate and simplify whole-slide segmentation as the first step of image analysis for researchers using the Cell DIVE multiplex imaging platform. This segmentation pipeline uses the well-established `DeepCell` library and `Mesmer` model. The notebook structure is inspired by the ark analysis pipeline (Angelo, 2023): https://github.com/angelolab/ark-analysis. This segmentation pipeline is also part of a STAR protocol publication (doi: TO BE ADDED).
 
 ## Installation
 
@@ -89,7 +89,7 @@ To verify that both `nvidia-container-cli` tools and `Singularity` were properly
 ```bash
 singularity run --nv --nvccli docker://nvidia/cuda:11.8.0-base-ubuntu22.04 nvidia-smi
 ```
-This starts a container with access to all GPUs installed in your systems and prints information about them to the screen. If you can see info about you GPUs being displayed then you have correctly setup up `Singularity`.
+This starts a container with access to all GPUs installed in your systems and prints information about them to the screen. If you can see info about your GPUs being displayed then you have correctly setup up `Singularity`.
 
 
 ### Build whole-slide image segmentation container
@@ -155,12 +155,12 @@ Once you are in the `WSL` environment you can run faster GPU-accelerated segment
 wsi-segmentation-gpu ## for gpu accelerated segmentation
 ```
 
-or only using the CPU to to perform segmentation by typing
+or only using the CPU to perform segmentation by typing
 ```bash
 wsi-segmentation-cpu ## for cpu accelerated segmentation
 ```
 
-> You can pass additional singularity arguments if you want. For example to bind a results folder to a directory `/data` to make it more easily accessible inside the notebook. In `WSL` the `C:` drive, `D:` drive, etc are mounted and located at `/mnt/c`, `/mnt/d`, etc, respectively. To mount your data folder to `/data` start the notebooks as follows:
+> You can pass additional singularity arguments if you want. For example, to bind a results folder to a directory `/data` to make it more easily accessible inside the notebook. In `WSL` the `C:` drive, `D:` drive, etc are mounted and located at `/mnt/c`, `/mnt/d`, etc, respectively. To mount your data folder to `/data` start the notebooks as follows:
 >```bash 
 > wsi-segmentation-gpu --bind /path/to/result:/data
 >```
@@ -177,11 +177,11 @@ By the end of the notebook you should have created file and folder structure, a 
 
 ## References and Acknowledgments
 
-The work in this repository was partly inspired by and the whole slide segmentation notebook loosely adapted in it's structure from the `ark-analysis` toolbox (https://github.com/angelolab/ark-analysis).
+The work in this repository and protocol paper was based on [Fibroblast Atlas 2022](https://github.com/immunogenomics/FibroblastAtlas2022), inspired by and further adapted from the [ark-analysis] toolbox (https://github.com/angelolab/ark-analysis).
 
 
 ## How to cite
 
-If you use this work was part of your analysis please cite this `wsi-segmentation` repo directly (https://github.com/KIR-CellDIVE/wsi-segmentation) as well as the accompanying publication:
+If you use this work as part of your analysis please cite this `wsi-segmentation` repo directly (https://github.com/KIR-CellDIVE/wsi-segmentation) as well as the accompanying publication: (**to be added**). Please also refer to the repositories acknowledged here and ensure compliance with all licensing requirements.
 
 * Authors, Title, Journal, Year, DOI
