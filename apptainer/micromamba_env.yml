@@ -1,9 +1,13 @@
 name: py310
 channels:
   - conda-forge
+  - nvidia
 always_yes: true
 dependencies:
   - python =3.10
+  - cudatoolkit =11.8.0
+  - cuda-nvcc =12.4.99
+  - cudnn =8.9.7.29
   - ipyfilechooser =0.6.0
   - jupyterlab =4.1.4
   - jupyter_server =2.13.0
