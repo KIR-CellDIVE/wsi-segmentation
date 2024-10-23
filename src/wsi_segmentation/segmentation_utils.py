@@ -6,6 +6,43 @@ from pathlib import Path
 import gc
 from math import ceil
 
+def find_optimal_tile_size(x_dim, y_dim, overlap, max_tile_dim = 10000, max_tile_area = None):
+    max_tile_area = pow(max_tile_dim,2) if max_tile_area == None else max_tile_area
+    
+    dim_1 = min(x_dim, y_dim)
+    if (dim_1 == x_dim):
+        dim_1_name = "x"
+        dim_2 = y_dim
+    else:
+        dim_1_name = "y"
+        dim_2 = x_dim
+
+    d= (dim_1-overlap)//(max_tile_dim-overlap)
+
+    r = (dim_1-overlap)%(max_tile_dim-overlap)
+
+    if (r==0):
+        tile_size_dim_1 = max_tile_dim
+    else:
+        tile_size_dim_1 = ceil((dim_1 - overlap)/(d+1)+overlap)
+
+
+    new_max = ceil(max_tile_area/tile_size_dim_1)
+
+    d= (dim_2-overlap)//(new_max-overlap)
+    r = (dim_2-overlap)%(new_max-overlap)
+    if (r==0):
+        tile_size_dim_2 = new_max
+    else:
+        tile_size_dim_2 = abs((dim_2 - overlap)/(d+1)+overlap)+1
+    if (dim_1_name == "x"):
+        tile_size_row = tile_size_dim_1
+        tile_size_col = tile_size_dim_2
+    else :
+        tile_size_row = tile_size_dim_2
+        tile_size_col = tile_size_dim_1
+    return(int(tile_size_row), int(tile_size_col))
+
 def _xy_ratio(col_tile_size, row_tile_size):
         if 0 in [col_tile_size, row_tile_size]:
             return True
@@ -213,7 +250,7 @@ def _combine_overlapping_masks(mask_x, mask_y, dummy_var):
     gc.collect()
     return(mask_x)
 
-def predict_tiled(img, tile_size_row=None, tile_size_col=None, dummy_var=-99, overlap=0, cutoff=2, background_threshold= 0.1, max_tile_area=None, infer_gaps = False, compartment='whole-cell', cell_size_threshold=None, app=None, postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
+def predict_tiled(img, tile_size_row=None, tile_size_col=None, dummy_var=-99, overlap=0, cutoff=2, background_threshold= 0.1, max_tile_dim = 10000, max_tile_area=None, infer_gaps = False, compartment='whole-cell', cell_size_threshold=None, app=None, postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
     #   ensure the image has 4 dimensions to start with and that the last one is 2 dims
     if len(img.shape) != 4:
         raise ValueError(f"Image data must be 4D, got image of shape {img.shape}")
@@ -226,10 +263,11 @@ def predict_tiled(img, tile_size_row=None, tile_size_col=None, dummy_var=-99, ov
         fov = img[[fov_idx], ...]
         overlap = overlap if infer_gaps == True else 0
         if (tile_size_row) == None or (tile_size_col == None):
-            tile = tile_sizer(fov.shape[2], fov.shape[1], overlap) if max_tile_area == None else tile_sizer(fov.shape[2], fov.shape[1], overlap, max_tile_area=max_tile_area)
-            step_size_row = tile["row_tile_size"]
-            step_size_col = tile["col_tile_size"]
-            overlap_tiles = tile["overlap"]
+            # tile = tile_sizer(fov.shape[2], fov.shape[1], overlap) if max_tile_area == None else tile_sizer(fov.shape[2], fov.shape[1], overlap, max_tile_area=max_tile_area)
+            tile = find_optimal_tile_size(fov.shape[1], fov.shape[2], overlap, max_tile_dim = max_tile_dim, max_tile_area = max_tile_area)
+            step_size_row = tile[0]
+            step_size_col = tile[1]
+            overlap_tiles = overlap
         else:
             step_size_row = tile_size_row
             step_size_col = tile_size_col
