@@ -8,39 +8,34 @@ from math import ceil
 
 def find_optimal_tile_size(x_dim, y_dim, overlap, max_tile_dim = 10000, max_tile_area = None):
     max_tile_area = pow(max_tile_dim,2) if max_tile_area == None else max_tile_area
+
+    dims = [x_dim, y_dim]
+    dim_1_idx = dims.index(min(dims))
     
-    dim_1 = min(x_dim, y_dim)
-    if (dim_1 == x_dim):
-        dim_1_name = "x"
-        dim_2 = y_dim
+    dim_1 = x_dim if dim_1_idx == 0 else y_dim
+    dim_2 = y_dim if dim_1_idx == 0 else x_dim
+
+    d1= dim_1//max_tile_dim
+    r1= dim_1%max_tile_dim
+    
+    if (d1==0 or (d1==1 and r1==0)):
+        tile_size_dim_1 = dim_1
     else:
-        dim_1_name = "y"
-        dim_2 = x_dim
+        tile_size_dim_1 = math.ceil((dim_1 - overlap)/(d1+1)+overlap)
 
-    d= (dim_1-overlap)//(max_tile_dim-overlap)
+    dim_2_max = math.ceil(max_tile_area/tile_size_dim_1)
+    
+    d2 = (dim_2)//(dim_2_max)
+    r2 = (dim_2)%(dim_2_max)
 
-    r = (dim_1-overlap)%(max_tile_dim-overlap)
-
-    if (r==0):
-        tile_size_dim_1 = max_tile_dim
+    if (d2==0 or (d2 == 1 and r2 == 0)):
+        tile_size_dim_2 = dim_2
     else:
-        tile_size_dim_1 = ceil((dim_1 - overlap)/(d+1)+overlap)
+        tile_size_dim_2 = math.ceil((dim_2 - overlap)/(d2+1)+overlap)
 
+    tile_size_row = tile_size_dim_1 if dim_1_idx == 0 else tile_size_dim_2
+    tile_size_col = tile_size_dim_2 if dim_1_idx == 0 else tile_size_dim_1
 
-    new_max = ceil(max_tile_area/tile_size_dim_1)
-
-    d= (dim_2-overlap)//(new_max-overlap)
-    r = (dim_2-overlap)%(new_max-overlap)
-    if (r==0):
-        tile_size_dim_2 = new_max
-    else:
-        tile_size_dim_2 = abs((dim_2 - overlap)/(d+1)+overlap)+1
-    if (dim_1_name == "x"):
-        tile_size_row = tile_size_dim_1
-        tile_size_col = tile_size_dim_2
-    else :
-        tile_size_row = tile_size_dim_2
-        tile_size_col = tile_size_dim_1
     return(int(tile_size_row), int(tile_size_col))
 
 def _xy_ratio(col_tile_size, row_tile_size):
