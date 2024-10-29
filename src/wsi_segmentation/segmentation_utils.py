@@ -80,7 +80,7 @@ def determine_boundaries(img, r0,r1,c0,c1):
     
     return(boundaries)
 
-def tiled_segmentation_overlap(img, start_row, start_col, stop_row, stop_col, step_size_row, step_size_col, dummy_var, overlap = 0, cutoff=2, background_threshold = 0.1, compartment='whole-cell', app=None, postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
+def tiled_segmentation_overlap(img, start_row, start_col, stop_row, stop_col, step_size_row, step_size_col, dummy_var, overlap = 0, cutoff=2, background_threshold = 0.1, compartment='whole-cell', app=None, image_mpp = None, postprocess_kwargs_whole_cell={}, postprocess_kwargs_nuclear={}):
     if compartment in ["whole-cell", "nuclear"]:
         mask_array = np.expand_dims(np.full_like(img, -99, dtype=int)[:,:,:,0], 3)
     elif compartment == "both":
@@ -99,7 +99,7 @@ def tiled_segmentation_overlap(img, start_row, start_col, stop_row, stop_col, st
             boundaries = determine_boundaries(img, r0,r1,c0,c1)
             
             if (np.max(img[:, r0:r1, c0:c1,:]) >= background_threshold) and (np.unique(img[:, r0:r1, c0:c1,0]).shape[0] > 1) and (np.unique(img[:, r0:r1, c0:c1,1]).shape[0] > 1) :
-                tmp_segmentation = app.predict(img[:, r0:r1, c0:c1,:], compartment=compartment, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
+                tmp_segmentation = app.predict(img[:, r0:r1, c0:c1,:], image_mpp = image_mpp, compartment=compartment, postprocess_kwargs_whole_cell=postprocess_kwargs_whole_cell, postprocess_kwargs_nuclear=postprocess_kwargs_nuclear)
 
                 for j in range(tmp_segmentation.shape[3]):
                     tmp_segmentation[0,:,:,j] = remove_boundary_mask(tmp_segmentation[0,:,:,j], cutoff, boundaries, dummy_var)
