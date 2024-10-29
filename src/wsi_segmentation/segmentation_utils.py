@@ -6,14 +6,14 @@ from pathlib import Path
 import gc
 from math import ceil
 
-def find_optimal_tile_size(x_dim, y_dim, overlap, max_tile_dim = 10000, max_tile_area = None):
+def find_optimal_tile_size(row_dim, col_dim, overlap, max_tile_dim = 10000, max_tile_area = None):
     max_tile_area = pow(max_tile_dim,2) if max_tile_area == None else max_tile_area
 
-    dims = [x_dim, y_dim]
+    dims = [row_dim, col_dim]
     dim_1_idx = dims.index(min(dims))
     
-    dim_1 = x_dim if dim_1_idx == 0 else y_dim
-    dim_2 = y_dim if dim_1_idx == 0 else x_dim
+    dim_1 = row_dim if dim_1_idx == 0 else col_dim
+    dim_2 = col_dim if dim_1_idx == 0 else row_dim
 
     d1= dim_1//max_tile_dim
     r1= dim_1%max_tile_dim
