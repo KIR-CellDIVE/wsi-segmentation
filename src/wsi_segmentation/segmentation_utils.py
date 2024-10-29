@@ -12,8 +12,7 @@ def find_optimal_tile_size(row_dim, col_dim, overlap, max_tile_dim = 10000, max_
     dims = [row_dim, col_dim]
     dim_1_idx = dims.index(min(dims))
     
-    dim_1 = row_dim if dim_1_idx == 0 else col_dim
-    dim_2 = col_dim if dim_1_idx == 0 else row_dim
+    dim_1, dim_2 = (row_dim, col_dim) if dim_1_idx == 0 else (col_dim, row_dim)
 
     d1= dim_1//max_tile_dim
     r1= dim_1%max_tile_dim
@@ -33,8 +32,7 @@ def find_optimal_tile_size(row_dim, col_dim, overlap, max_tile_dim = 10000, max_
     else:
         tile_size_dim_2 = ceil((dim_2 - overlap)/(d2+1)+overlap)
 
-    tile_size_row = tile_size_dim_1 if dim_1_idx == 0 else tile_size_dim_2
-    tile_size_col = tile_size_dim_2 if dim_1_idx == 0 else tile_size_dim_1
+    tile_size_row, tile_size_col = (tile_size_dim_1, tile_size_dim_2) if dim_1_idx == 0 else (tile_size_dim_2,tile_size_dim_1)
 
     return(int(tile_size_row), int(tile_size_col))
 
