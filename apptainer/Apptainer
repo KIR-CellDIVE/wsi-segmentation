@@ -23,6 +23,9 @@ From: mambaorg/micromamba:1.5.7-focal-cuda-11.2.2
 
     # install wsi_segmentation module
     micromamba run -n py310 python3 -m pip install /opt/wsi_segmentation
+
+    # clean up python environment
+    micromamba clean --all -f -y
     
     # install deepcell model
     mkdir -p /.keras/models
