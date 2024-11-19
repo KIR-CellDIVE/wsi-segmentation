@@ -38,7 +38,7 @@ wsl --unregister Ubuntu-22.04
 rm ubuntu-2204.tar
 ```
 
-To enter the newly created `WSL` environment `Ubuntu` as the user `ubuntu` you set in the previous step run the following in the `PowerShell`:
+To enter the newly created `WSL` environment `Ubuntu_DIVEMAP` as the user `ubuntu` you set in the previous step run the following in the `PowerShell`:
 
 ```bash
 wsl -d Ubuntu_DIVEMAP -u ubuntu
@@ -58,10 +58,10 @@ EOF
 #### WSL/Ubuntu or native Ubuntu
 The following instructions assume that you are either running Ubuntu 20.04/22.04 LTS on either WSL (see instructions above) or natively and you have access to the console (see previous step for WSL).
 
-If on Windows and you have not yet entered the previously created `WSL` environment, run the following to enter `Ubuntu` `WSL` environment as user `ubuntu`:
+If on Windows and you have not yet entered the previously created `WSL` environment, run the following to enter `Ubuntu_DIVEMAP` `WSL` environment as user `ubuntu`:
 
 ```bash
-wsl -d Ubuntu -u ubuntu
+wsl -d Ubuntu_DIVEMAP -u ubuntu
 ```
 
 First, we have to install the relevant `NVIDIA` tools to be able to utilise the GPU and `Apptainer` to deploy and run containers. Make sure you are executing the following commands in order.
@@ -174,7 +174,7 @@ source ~/.profile
 If you have followed the installation step you should be able to run the whole-slide image segmentation Jupyter Notebook server now. If you are on `Windows` and you use `WSL`, first open `PowerShell` and enter the previously created WSL environment `Ubuntu` as the user `ubuntu` if you haven't already done so:
 
 ```bash
-wsl -d Ubuntu -u ubuntu
+wsl -d Ubuntu_DIVEMAP -u ubuntu
 ```
 
 Once you are in the `WSL` environment you can run faster GPU-accelerated segmentation (if you have a NVIDIA GPU) by typing
