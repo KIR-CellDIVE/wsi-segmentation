@@ -37,7 +37,7 @@ From: mambaorg/micromamba:1.5.7-focal-cuda-11.2.2
 
     # modify .jupyter/jupyter_lab_config.py
     mkdir -p  /opt/conda/envs/py310/etc/jupyter \
-    &&& cp jupyter_lab_config.py /opt/conda/envs/py310/etc/jupyter/jupyter_lab_config.py
+    && cp jupyter_lab_config.py /opt/conda/envs/py310/etc/jupyter/jupyter_lab_config.py
     # sed -i '1s;^;import tempfile\n;' /home/ubuntu/.jupyter/jupyter_lab_config.py
     # sed -i 's/# c.LabApp.workspaces_dir =.*/c.LabApp.workspaces_dir = tempfile.mkdtemp()/' /home/ubuntu/.jupyter/jupyter_lab_config.py
 
