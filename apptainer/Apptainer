@@ -34,6 +34,10 @@ From: mambaorg/micromamba:1.5.7-focal-cuda-11.2.2
     && tar -xvzf MultiplexSegmentation-9.tar.gz \
     && rm MultiplexSegmentation-9.tar.gz
 
+    # modify .jupyter/jupyter_lab_config.py
+    sed -i '1s;^;import tempfile\n;' /home/ubuntu/.jupyter/jupyter_lab_config.py
+    sed -i 's/# c.LabApp.workspaces_dir =.*/c.LabApp.workspaces_dir = tempfile.mkdtemp()/' /home/ubuntu/.jupyter/jupyter_lab_config.py
+
 %runscript
     micromamba run -n py310 jupyter lab --ip=0.0.0.0 --no-browser --port=$LISTEN_PORT --LabApp.default_url="/lab/workspaces/template?reset" --notebook-dir="/opt/analysis"
 
