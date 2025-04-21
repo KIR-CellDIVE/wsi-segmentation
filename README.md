@@ -58,7 +58,13 @@ If on Windows and you have not yet entered the previously created `WSL` environm
 wsl -d Ubuntu_DIVEMAP -u ubuntu
 ```
 
-First, we have to install the relevant `NVIDIA` tools to be able to utilise the GPU and `Apptainer` to deploy and run containers. Make sure you are executing the following commands in order.
+Within WSL, navigate to the root folder to avoid contaminating the Windows device workspace (so everything is contained within the WSL container.
+
+```bash
+cd ~
+```
+
+We have to install the relevant `NVIDIA` tools to be able to utilise the GPU and `Apptainer` to deploy and run containers. Make sure you are executing the following commands in order.
 
 First, we install the `nvidia-container-toolkit`. As part of this, we have to add and sign a new repository provided by `NVIDIA`. To do so, we first fetch and add the signing key:
 
