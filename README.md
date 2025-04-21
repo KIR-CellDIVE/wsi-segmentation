@@ -58,7 +58,7 @@ If on Windows and you have not yet entered the previously created `WSL` environm
 wsl -d Ubuntu_DIVEMAP -u ubuntu
 ```
 
-Within WSL, navigate to the root folder to avoid contaminating the Windows device workspace (so everything is contained within the WSL container.
+Within WSL, navigate to the root folder to avoid contaminating the Windows device workspace and ensuring all downloaded files are contained within the WSL container.
 
 ```bash
 cd ~
