@@ -38,12 +38,6 @@ wsl --unregister Ubuntu-22.04
 rm ubuntu-2204.tar
 ```
 
-To enter the newly created `WSL` environment `Ubuntu_DIVEMAP` as the user `ubuntu` you set in the previous step run the following in the `PowerShell`:
-
-```bash
-wsl -d Ubuntu_DIVEMAP -u ubuntu
-```
-
 Finally, to make the non-privileged `ubuntu` user the default user run the following command all at once in the `PowerShell`:  
 ```bash
 wsl -d Ubuntu_DIVEMAP -u root -e sh -c @"
